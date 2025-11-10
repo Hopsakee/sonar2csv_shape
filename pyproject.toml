@@ -1,0 +1,27 @@
+[project]
+name="sonar2csv_shape"
+dynamic = ["version"]
+description = "Convert sl2 and sl3 files from sonar measurements to csv and shape"
+readme = "README.md"
+authors = [
+    { name = "Jelle de Jong", email = "jelledejong@wdodelta.nl" }
+]
+requires-python=">=3.11"
+dependencies = []
+
+[project.scripts]
+sonar2csv-shape = "sonar2csv_shape:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "code"
+path = "__VERSION__.py"
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.1.0",
+    "nbdev>=2.4.6",
+]
