@@ -3,7 +3,7 @@ project:
 
 website:
   title: "sonar2csv_shape"
-  site-url: "https://jelledejong@wdodelta.nl.github.io/sonar2csv_shape"
+  site-url: "https://Hopsakee.github.io/sonar2csv_shape"
   description: "Convert sl2 and sl3 files from sonar measurements to csv and shape"
   repo-branch: main
-  repo-url: "https://github.com/jelledejong@wdodelta.nl/sonar2csv_shape"
+  repo-url: "https://github.com/Hopsakee/sonar2csv_shape"
