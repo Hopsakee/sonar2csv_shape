@@ -5,6 +5,7 @@ d = { 'settings': { 'branch': 'main',
                 'doc_host': 'https://Hopsakee.github.io',
                 'git_url': 'https://github.com/Hopsakee/sonar2csv_shape',
                 'lib_path': 'src'},
-  'syms': { 'src.core': { 'src.core.extract_height': ('core.html#extract_height', 'src/core.py'),
+  'syms': { 'src.core': { 'src.core.depth2height': ('core.html#depth2height', 'src/core.py'),
+                          'src.core.extract_height': ('core.html#extract_height', 'src/core.py'),
                           'src.core.read_sl': ('core.html#read_sl', 'src/core.py'),
                           'src.core.sl2gdf': ('core.html#sl2gdf', 'src/core.py')}}}
