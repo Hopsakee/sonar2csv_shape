@@ -20,6 +20,3 @@ def main():
 
 # %% ../nbs/01_convert.ipynb 10
 if __name__ == "__main__": main()
-
-# %% ../nbs/01_convert.ipynb 12
-import nbdev; nbdev.nbdev_export()
