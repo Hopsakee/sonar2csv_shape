@@ -1,0 +1,3525 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Module containing the reading and conversion logic from the sl2 and sl3 files to csv and shape">
+
+<title>core – sonar2csv_shape</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-000f0825b9c55ed21d14970d810c14a9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="core – sonar2csv_shape">
+<meta property="og:description" content="Module containing the reading and conversion logic from the sl2 and sl3 files to csv and shape">
+<meta property="og:site_name" content="sonar2csv_shape">
+<meta name="twitter:title" content="core – sonar2csv_shape">
+<meta name="twitter:description" content="Module containing the reading and conversion logic from the sl2 and sl3 files to csv and shape">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">sonar2csv_shape</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./core.html">core</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">sonar2csv_shape</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">core</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./convert.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Command line</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#read_sl" id="toc-read_sl" class="nav-link active" data-scroll-target="#read_sl">read_sl</a></li>
+  <li><a href="#extract_height" id="toc-extract_height" class="nav-link" data-scroll-target="#extract_height">extract_height</a></li>
+  <li><a href="#clean_gdf" id="toc-clean_gdf" class="nav-link" data-scroll-target="#clean_gdf">clean_gdf</a></li>
+  <li><a href="#slx2gdf" id="toc-slx2gdf" class="nav-link" data-scroll-target="#slx2gdf">slx2gdf</a></li>
+  <li><a href="#export_gdf" id="toc-export_gdf" class="nav-link" data-scroll-target="#export_gdf">export_gdf</a></li>
+  <li><a href="#process_sonar_file" id="toc-process_sonar_file" class="nav-link" data-scroll-target="#process_sonar_file">process_sonar_file</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/Hopsakee/sonar2csv_shape/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="core.html.md"><i class="bi bi-file-code"></i>CommonMark</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">core</h1>
+</div>
+
+<div>
+  <div class="description">
+    Module containing the reading and conversion logic from the sl2 and sl3 files to csv and shape
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p>We will use <a href="https://github.com/KennethTM/sonarlight">sonarlight</a> to read the measurements from the <code>sl2</code> or <code>sl3</code> files.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Previously we used <a href="https://github.com/opensounder/python-sllib">sslib</a> to parse the sonar files. But this package latest commit was 4 years ago. This <code>sslib</code> package also has less stars and the <code>sonarlight</code> has some neat extra features, such as simple conversion to a Pandas dataframe.</p>
+</div>
+</div>
+<div id="b0fa2b1e" class="cell" data-time_run="12:59:52p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>sl2_f <span class="op">=</span> Path(<span class="st">"../test/2024-07-11_zuiderpark Hoogeveen2_+1075cmnap.sl2"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>sl3_f <span class="op">=</span> Path(<span class="st">"../test/Sonar_2022-04-26_21.07.11beschrijving+0765cmNAP.sl3"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="f95b1e17" class="cell" data-skipped="true" data-time_run="12:59:52p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(sl2_f)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="181">
+<pre><code>pathlib.PosixPath</code></pre>
+</div>
+</div>
+<p>How should I do type anotating for <code>sl2_f</code>?</p>
+<section id="reply" class="level5">
+<h5 class="anchored" data-anchor-id="reply">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>For type annotating <code>sl2_f</code>, you can use <code>Path</code> from the <code>pathlib</code> module:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>sl2_f: Path <span class="op">=</span> Path(<span class="st">"/app/data/sonar2csv_shape/test/2024-07-11_zuiderpark Hoogeveen2_+1075cmnap.sl2"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Since you’ve already imported <code>Path</code> from <code>pathlib</code>, this will work perfectly. The type annotation <code>Path</code> covers both <code>PosixPath</code> (on Unix/Linux/Mac) and <code>WindowsPath</code> (on Windows), as these are subclasses of <code>Path</code>.</p>
+<p>Would you like to know about any other type annotation options for file paths?</p>
+<hr>
+</section>
+<section id="read_sl" class="level3">
+<h3 class="anchored" data-anchor-id="read_sl">read_sl</h3>
+<blockquote class="blockquote">
+<pre><code> read_sl (filepath:pathlib.Path)</code></pre>
+</blockquote>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>filepath</td>
+<td>Path</td>
+<td>The absolute location of the file to convert</td>
+</tr>
+<tr class="even">
+<td><strong>Returns</strong></td>
+<td><strong>Sonar</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div id="8a27dd6f" class="cell" data-time_run="12:59:53p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>sl2_d <span class="op">=</span> read_sl(sl2_f)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="daab2f53" class="cell" data-skipped="true" data-time_run="12:59:53p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>sl2_d</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="187">
+<pre><code>Summary of SL2 file:
+
+- Primary channel with 2963 frames
+- Secondary channel with 2963 frames
+- Downscan channel with 2963 frames
+- Sidescan channel with 2962 frames
+
+Start time: 2024-07-11 08:13:50.342999935
+End time: 2024-07-11 08:17:13.848999977
+
+File info: version 2, device 2, blocksize 3200, frame version 0</code></pre>
+</div>
+</div>
+<div id="9c6ff2ba" class="cell" data-time_run="12:59:53p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(sl2_d)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="189">
+<pre><code>sonarlight.sonar_class.Sonar</code></pre>
+</div>
+</div>
+<div id="e0589d9f" class="cell" data-time_run="12:59:53p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>sl2_d.df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="191">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">survey</th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">x</th>
+<th data-quarto-table-cell-role="th">y</th>
+<th data-quarto-table-cell-role="th">longitude</th>
+<th data-quarto-table-cell-role="th">latitude</th>
+<th data-quarto-table-cell-role="th">min_range</th>
+<th data-quarto-table-cell-role="th">max_range</th>
+<th data-quarto-table-cell-role="th">water_depth</th>
+<th data-quarto-table-cell-role="th">gps_speed</th>
+<th data-quarto-table-cell-role="th">gps_heading</th>
+<th data-quarto-table-cell-role="th">gps_altitude</th>
+<th data-quarto-table-cell-role="th">bottom_index</th>
+<th data-quarto-table-cell-role="th">frames</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1</th>
+<td>0</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.342999935</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.711570</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>588</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4</th>
+<td>0</td>
+<td>secondary</td>
+<td>2024-07-11 08:13:50.344000101</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.711570</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>588</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">7</th>
+<td>0</td>
+<td>downscan</td>
+<td>2024-07-11 08:13:50.404000044</td>
+<td>718714</td>
+<td>6906589</td>
+<td>6.478037</td>
+<td>52.711570</td>
+<td>0.00000</td>
+<td>2.40792</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>444</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">8</th>
+<td>1</td>
+<td>sidescan</td>
+<td>2024-07-11 08:13:50.404999971</td>
+<td>718714</td>
+<td>6906589</td>
+<td>6.478037</td>
+<td>52.711570</td>
+<td>-4.99872</td>
+<td>4.99872</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>214</td>
+<td>[41, 40, 40, 42, 42, 44, 47, 48, 48, 48, 48, 4...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">9</th>
+<td>1</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.385999918</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.711570</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.765342</td>
+<td>0.118292</td>
+<td>0.683147</td>
+<td>12.19</td>
+<td>588</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">25276</th>
+<td>2972</td>
+<td>downscan</td>
+<td>2024-07-11 08:17:13.760999918</td>
+<td>718672</td>
+<td>6906534</td>
+<td>6.477659</td>
+<td>52.711270</td>
+<td>0.00000</td>
+<td>2.40792</td>
+<td>0.924873</td>
+<td>0.615444</td>
+<td>5.473728</td>
+<td>12.34</td>
+<td>537</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">25277</th>
+<td>4466</td>
+<td>sidescan</td>
+<td>2024-07-11 08:17:13.760999918</td>
+<td>718672</td>
+<td>6906534</td>
+<td>6.477659</td>
+<td>52.711270</td>
+<td>-4.99872</td>
+<td>4.99872</td>
+<td>0.924873</td>
+<td>0.615444</td>
+<td>5.473728</td>
+<td>12.34</td>
+<td>259</td>
+<td>[45, 47, 48, 48, 48, 48, 47, 46, 46, 46, 46, 4...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">25279</th>
+<td>2973</td>
+<td>primary</td>
+<td>2024-07-11 08:17:13.786999941</td>
+<td>718673</td>
+<td>6906533</td>
+<td>6.477668</td>
+<td>52.711264</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.941796</td>
+<td>0.599854</td>
+<td>5.472764</td>
+<td>12.34</td>
+<td>724</td>
+<td>[214, 214, 214, 214, 214, 214, 214, 214, 214, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">25282</th>
+<td>2973</td>
+<td>secondary</td>
+<td>2024-07-11 08:17:13.788000107</td>
+<td>718673</td>
+<td>6906533</td>
+<td>6.477668</td>
+<td>52.711264</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.941796</td>
+<td>0.599854</td>
+<td>5.472764</td>
+<td>12.34</td>
+<td>724</td>
+<td>[214, 214, 214, 214, 214, 214, 214, 214, 214, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">25285</th>
+<td>2973</td>
+<td>downscan</td>
+<td>2024-07-11 08:17:13.848999977</td>
+<td>718672</td>
+<td>6906534</td>
+<td>6.477659</td>
+<td>52.711270</td>
+<td>0.00000</td>
+<td>2.40792</td>
+<td>0.941796</td>
+<td>0.599854</td>
+<td>5.472764</td>
+<td>12.34</td>
+<td>547</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+</tbody>
+</table>
+
+<p>11851 rows × 15 columns</p>
+</div>
+</div>
+</div>
+<p>We need to do several processing steps to go from the <code>sl2</code> or <code>sl3</code> data to a <code>csv</code> and <code>shape</code> we can use in our GIS software.</p>
+<p><strong>From depth in meter to bottom height in mNAP</strong></p>
+<p>To convert from depth measurement in meter to bottom height measurement in mNAP we need to extract the height in mNAP from which the depth measurements were taken. Since our Sonar boot doesn’t measure it’s own height, we add this height manually in the filename. We add it add the end of filename, some examples:</p>
+<ul>
+<li><code>2024-07-11_zuiderpark Hoogeveen2_+1075cmnap.sl2</code></li>
+<li><code>Sonar_2022-04-26_21.07.11beschrijving+0765cmNAP.sl3</code></li>
+</ul>
+<p><strong>Filter relevant facts</strong></p>
+<p>We only need the facts that have the value “primary” in the column “survey”.</p>
+<p><strong>Transformation to the correct CRS</strong></p>
+<p>The coördinates in the Sonar files are in crs WGS84 (epsg:4326), we need to convert those to the crs we use, which is RDN Amersfoort (epsg:28992). We accomplish that by using the <code>geopandas</code> method <code>.set_crs</code> and <code>.to_crs</code>.</p>
+<div id="f0a809fc" class="cell" data-time_run="12:59:53p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>sl2_df_sml <span class="op">=</span> sl2_d.df[<span class="dv">0</span>:<span class="dv">16</span>]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>sl2_df_sml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="193">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">survey</th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">x</th>
+<th data-quarto-table-cell-role="th">y</th>
+<th data-quarto-table-cell-role="th">longitude</th>
+<th data-quarto-table-cell-role="th">latitude</th>
+<th data-quarto-table-cell-role="th">min_range</th>
+<th data-quarto-table-cell-role="th">max_range</th>
+<th data-quarto-table-cell-role="th">water_depth</th>
+<th data-quarto-table-cell-role="th">gps_speed</th>
+<th data-quarto-table-cell-role="th">gps_heading</th>
+<th data-quarto-table-cell-role="th">gps_altitude</th>
+<th data-quarto-table-cell-role="th">bottom_index</th>
+<th data-quarto-table-cell-role="th">frames</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1</th>
+<td>0</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.342999935</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>588</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4</th>
+<td>0</td>
+<td>secondary</td>
+<td>2024-07-11 08:13:50.344000101</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>588</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">7</th>
+<td>0</td>
+<td>downscan</td>
+<td>2024-07-11 08:13:50.404000044</td>
+<td>718714</td>
+<td>6906589</td>
+<td>6.478037</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>2.40792</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>444</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">8</th>
+<td>1</td>
+<td>sidescan</td>
+<td>2024-07-11 08:13:50.404999971</td>
+<td>718714</td>
+<td>6906589</td>
+<td>6.478037</td>
+<td>52.71157</td>
+<td>-4.99872</td>
+<td>4.99872</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>214</td>
+<td>[41, 40, 40, 42, 42, 44, 47, 48, 48, 48, 48, 4...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">9</th>
+<td>1</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.385999918</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.765342</td>
+<td>0.118292</td>
+<td>0.683147</td>
+<td>12.19</td>
+<td>588</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">12</th>
+<td>1</td>
+<td>secondary</td>
+<td>2024-07-11 08:13:50.387000084</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.765342</td>
+<td>0.118292</td>
+<td>0.683147</td>
+<td>12.19</td>
+<td>588</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">15</th>
+<td>1</td>
+<td>downscan</td>
+<td>2024-07-11 08:13:50.447000027</td>
+<td>718714</td>
+<td>6906589</td>
+<td>6.478037</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>2.40792</td>
+<td>0.765342</td>
+<td>0.118292</td>
+<td>0.683147</td>
+<td>12.19</td>
+<td>444</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">16</th>
+<td>2</td>
+<td>sidescan</td>
+<td>2024-07-11 08:13:50.447999954</td>
+<td>718714</td>
+<td>6906589</td>
+<td>6.478037</td>
+<td>52.71157</td>
+<td>-4.99872</td>
+<td>4.99872</td>
+<td>0.765342</td>
+<td>0.118292</td>
+<td>0.683147</td>
+<td>12.19</td>
+<td>214</td>
+<td>[40, 47, 52, 55, 55, 57, 58, 57, 54, 54, 48, 4...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>2</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.473000050</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.763347</td>
+<td>0.117554</td>
+<td>0.690681</td>
+<td>12.19</td>
+<td>587</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">21</th>
+<td>2</td>
+<td>secondary</td>
+<td>2024-07-11 08:13:50.473999977</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.763347</td>
+<td>0.117554</td>
+<td>0.690681</td>
+<td>12.19</td>
+<td>587</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">24</th>
+<td>2</td>
+<td>downscan</td>
+<td>2024-07-11 08:13:50.535000086</td>
+<td>718714</td>
+<td>6906589</td>
+<td>6.478037</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>2.40792</td>
+<td>0.763347</td>
+<td>0.117554</td>
+<td>0.690681</td>
+<td>12.19</td>
+<td>443</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">25</th>
+<td>4</td>
+<td>sidescan</td>
+<td>2024-07-11 08:13:50.536000013</td>
+<td>718714</td>
+<td>6906589</td>
+<td>6.478037</td>
+<td>52.71157</td>
+<td>-4.99872</td>
+<td>4.99872</td>
+<td>0.763347</td>
+<td>0.117554</td>
+<td>0.690681</td>
+<td>12.19</td>
+<td>213</td>
+<td>[45, 46, 47, 47, 47, 47, 49, 51, 54, 54, 55, 5...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">26</th>
+<td>3</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.519000052</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.763347</td>
+<td>0.117210</td>
+<td>0.700539</td>
+<td>12.19</td>
+<td>587</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">29</th>
+<td>3</td>
+<td>secondary</td>
+<td>2024-07-11 08:13:50.519999981</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.763347</td>
+<td>0.117210</td>
+<td>0.700539</td>
+<td>12.19</td>
+<td>587</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">32</th>
+<td>3</td>
+<td>downscan</td>
+<td>2024-07-11 08:13:50.578000069</td>
+<td>718714</td>
+<td>6906589</td>
+<td>6.478037</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>2.40792</td>
+<td>0.763347</td>
+<td>0.117210</td>
+<td>0.700539</td>
+<td>12.19</td>
+<td>443</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">33</th>
+<td>5</td>
+<td>sidescan</td>
+<td>2024-07-11 08:13:50.578999996</td>
+<td>718714</td>
+<td>6906589</td>
+<td>6.478037</td>
+<td>52.71157</td>
+<td>-4.99872</td>
+<td>4.99872</td>
+<td>0.763347</td>
+<td>0.117210</td>
+<td>0.700539</td>
+<td>12.19</td>
+<td>213</td>
+<td>[26, 34, 40, 44, 44, 46, 47, 46, 45, 45, 43, 4...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The <code>sl2_df_sml</code> dataframe also has a column <code>gps_altitude</code>. Can you explain what this probably is. Given that longitude and latitude are given in the WGS84 coordinate system?</p>
+<section id="reply-1" class="level5">
+<h5 class="anchored" data-anchor-id="reply-1">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>Good question! The <code>gps_altitude</code> column is likely the <strong>altitude (elevation) above the WGS84 ellipsoid</strong>, measured in meters.</p>
+<p>In the WGS84 coordinate system, GPS devices typically provide three coordinates: - Longitude and latitude (horizontal position) - Altitude/elevation (vertical position)</p>
+<p>This GPS altitude is usually the height above the WGS84 reference ellipsoid (a mathematical model of Earth’s shape), not the height above sea level or above a local datum like NAP.</p>
+<p>Looking at your data, the <code>gps_altitude</code> values are around 12.19 meters. This would be the height of the GPS antenna (on your sonar boat) above the WGS84 ellipsoid at that location.</p>
+<p>Is this different from the height information you’re extracting from the filename (like “+1075cmnap”)? What do you think the relationship might be between these two height measurements?</p>
+<p>Great. How can I transform this <code>gps_altitude</code> to mNAP as used in the RDnew Amersfoort system (epsg:28992)?</p>
+</section>
+<section id="reply-2" class="level5">
+<h5 class="anchored" data-anchor-id="reply-2">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>Good thinking! However, there’s an important distinction to make here:</p>
+<p><strong>GPS altitude and coordinate system transformations work differently than horizontal coordinates.</strong></p>
+<p>When you transform longitude/latitude from WGS84 (epsg:4326) to RD New (epsg:28992) using <code>.to_crs()</code>, it handles the horizontal position transformation well. But the vertical component (altitude) is trickier because:</p>
+<ol type="1">
+<li>GPS altitude is height above the WGS84 ellipsoid</li>
+<li>NAP (Normaal Amsterdams Peil) is a height above mean sea level</li>
+<li>These two reference surfaces don’t have a simple constant offset - the difference varies by location</li>
+</ol>
+<p>To properly convert GPS altitude to mNAP, you typically need a <strong>geoid model</strong> or a transformation grid specific to the Netherlands (like NLGEO2018 or similar). This accounts for the local variations between the ellipsoid and the geoid (mean sea level).</p>
+<p>Do you have access to such a transformation tool, or is there a reason you’re interested in converting the GPS altitude? I notice you’re already extracting the NAP height from the filename - is that serving a different purpose?</p>
+<p>It would be good if we could skip the NAP height from the filename. Since that is a manual proces. Which may give errors or be forgotten when the file is uploaded.</p>
+</section>
+<section id="reply-3" class="level5">
+<h5 class="anchored" data-anchor-id="reply-3">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>That makes sense - automating this would definitely reduce errors and make the workflow more robust!</p>
+<p>To convert GPS altitude (WGS84 ellipsoid height) to mNAP, you’ll need to apply a geoid correction. In the Netherlands, the standard approach is to use the <strong>RDNAPTRANS</strong> transformation, which includes both horizontal (RD) and vertical (NAP) transformations.</p>
+<p>Python libraries that can handle this include: - <strong>pyproj</strong> - can handle vertical transformations with the right geoid model - <strong>PROJ</strong> (the underlying library) - supports compound CRS transformations</p>
+<p>The key is to use a compound coordinate reference system that includes both horizontal and vertical components. For the Netherlands, you’d want something like EPSG:7415 (RD New + NAP height).</p>
+<p>Have you used <code>pyproj</code> before, or would you like to explore how to set up this transformation? It will involve a few steps beyond the simple <code>.to_crs()</code> you’re currently using.</p>
+<p>How to convert the pandas dataframe <code>sl2df_sml</code> to a geodataframe?</p>
+</section>
+<section id="reply-4" class="level5">
+<h5 class="anchored" data-anchor-id="reply-4">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>To convert your pandas DataFrame <code>sl2df_sml</code> to a GeoDataFrame, you need to create geometry objects from your coordinate columns. Since you have <code>longitude</code> and <code>latitude</code> columns, you can use those to create Point geometries.</p>
+<p>Here’s how you’d approach it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>gdf <span class="op">=</span> geopandas.GeoDataFrame(sl2df_sml, geometry<span class="op">=</span>geopandas.points_from_xy(sl2df_sml.longitude, sl2df_sml.latitude))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This creates Point geometries from your longitude/latitude columns. However, you’ll also want to set the coordinate reference system (CRS) since these are WGS84 coordinates. Would you like to try writing that part yourself, or would you like a hint about which method to use?</p>
+<div id="28f7730d" class="cell" data-time_run="12:59:54p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>gdf <span class="op">=</span> gpd.GeoDataFrame(sl2_df_sml, geometry<span class="op">=</span>gpd.points_from_xy(sl2_df_sml.longitude, sl2_df_sml.latitude))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="aff3b901" class="cell" data-time_run="12:59:54p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>gdf <span class="op">=</span> gdf.set_crs(epsg<span class="op">=</span><span class="dv">4326</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="f29aff19" class="cell" data-time_run="12:59:54p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>gdf.crs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="199">
+<pre><code>&lt;Geographic 2D CRS: EPSG:4326&gt;
+Name: WGS 84
+Axis Info [ellipsoidal]:
+- Lat[north]: Geodetic latitude (degree)
+- Lon[east]: Geodetic longitude (degree)
+Area of Use:
+- name: World.
+- bounds: (-180.0, -90.0, 180.0, 90.0)
+Datum: World Geodetic System 1984 ensemble
+- Ellipsoid: WGS 84
+- Prime Meridian: Greenwich</code></pre>
+</div>
+</div>
+<div id="c42010a7" class="cell" data-time_run="12:59:54p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>gdf <span class="op">=</span> gdf.to_crs(epsg<span class="op">=</span><span class="dv">28992</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="89782c9d" class="cell" data-time_run="12:59:54p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>gdf.crs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="203">
+<pre><code>&lt;Projected CRS: EPSG:28992&gt;
+Name: Amersfoort / RD New
+Axis Info [cartesian]:
+- X[east]: Easting (metre)
+- Y[north]: Northing (metre)
+Area of Use:
+- name: Netherlands - onshore, including Waddenzee, Dutch Wadden Islands and 12-mile offshore coastal zone.
+- bounds: (3.2, 50.75, 7.22, 53.7)
+Coordinate Operation:
+- name: RD New
+- method: Oblique Stereographic
+Datum: Amersfoort
+- Ellipsoid: Bessel 1841
+- Prime Meridian: Greenwich</code></pre>
+</div>
+</div>
+<p>I want to build a regex to extract the height in all of the following cases:</p>
+<p><code>measurements_-720cmnap.sl2</code> <code>measurements_+720cmNap.sl3</code> <code>measurements_-1720cmnap.sl3</code> <code>measurements-1720cmnap.sl3</code> <code>measurements+20cmNAP.sl2</code> <code>measurements+20CMNAP.sl2</code></p>
+</section>
+<section id="reply-5" class="level5">
+<h5 class="anchored" data-anchor-id="reply-5">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>Great! You want to extract the height value (including the sign) from those filenames. Let’s break down what patterns you need to match:</p>
+<ul>
+<li>Either a leading <code>+</code> or <code>-</code> sign</li>
+<li>One or more digits</li>
+<li>Followed by <code>cmnap</code> (case-insensitive)</li>
+</ul>
+<p>You only need the number with its sign.</p>
+<p>Correct. Please explain how I do this.</p>
+</section>
+<section id="reply-6" class="level5">
+<h5 class="anchored" data-anchor-id="reply-6">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>To extract this pattern with regex, you’ll need to use Python’s <code>re</code> module. Here’s the approach:</p>
+<p><strong>Pattern components:</strong> - <code>[+-]</code> matches either + or - - <code>\d+</code> matches one or more digits - <code>(?=cmnap)</code> is a lookahead that checks for “cmnap” (case-insensitive) without including it in the match</p>
+<p>You’ll want to use <code>re.search()</code> to find the pattern in the filename string, and use the <code>re.IGNORECASE</code> flag to handle different capitalizations.</p>
+<p>Would you like to try writing the regex pattern yourself, or would you like me to show you an example?</p>
+<div id="0aa8953e" class="cell" data-time_run="12:59:55p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="972fd780" class="cell" data-time_run="12:59:55p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>rgx <span class="op">=</span> <span class="vs">r"</span><span class="pp">[+-]</span><span class="dv">\d</span><span class="op">+</span><span class="ex">(</span><span class="fu">?=</span><span class="vs">cmnap</span><span class="ex">)</span><span class="vs">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="609c291c" class="cell" data-time_run="12:59:55p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="bu">int</span>(re.search(rgx, <span class="bu">str</span>(sl2_f), flags<span class="op">=</span>re.IGNORECASE)[<span class="dv">0</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="209">
+<pre><code>1075</code></pre>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="extract_height" class="level3">
+<h3 class="anchored" data-anchor-id="extract_height">extract_height</h3>
+<blockquote class="blockquote">
+<pre><code> extract_height (sl_filepath:pathlib.Path,
+                 re_ptrn:str='[+-]?\\d+(?=cmnap)')</code></pre>
+</blockquote>
+<p><em>Extract height from the filename in cmNAP</em></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sl_filepath</td>
+<td>Path</td>
+<td></td>
+<td>The absolute location of the file to convert</td>
+</tr>
+<tr class="even">
+<td>re_ptrn</td>
+<td>str</td>
+<td>[+-]?(?=cmnap)</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>Returns</strong></td>
+<td><strong>int</strong></td>
+<td></td>
+<td><strong>The height of the measurement station in cm above NAP</strong></td>
+</tr>
+</tbody>
+</table>
+<div id="99f1c79a" class="cell" data-time_run="12:59:55p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>(extract_height(Path(<span class="st">"/some/where/afen22e34_1823cmNAP.sl2"</span>)),</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>extract_height(Path(<span class="st">"/some/where/afen22e34-1823cmNAP.sl2"</span>)),</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>extract_height(Path(<span class="st">"/some/where/afen22e34br_-1823cmNAP.sl2"</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="213">
+<pre><code>(1823, -1823, -1823)</code></pre>
+</div>
+</div>
+<div id="81d571d0" class="cell" data-time_run="12:59:56p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> slx2gdf(</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    sl_filepath: Path, <span class="co"># The absolute location of the file to convert</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    msrmnt_height: <span class="bu">int</span>, <span class="co"># Height of the measurement instrument at time of taking the measurements</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    to_crs: <span class="bu">str</span> <span class="op">=</span> <span class="st">"epsg:28992"</span>, <span class="co"># epsg code of crs to transform the coördinates to</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    )<span class="op">-&gt;</span>gpd:</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Convert a sl2 or sl3 file to a GeoDataFrame with the given crs."</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> Sonar(<span class="bu">str</span>(sl_filepath))</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> s.df</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>    gdf <span class="op">=</span> gpd.GeoDataFrame(df, geometry<span class="op">=</span>gpd.points_from_xy(df.longitude, df.latitude))</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    gdf <span class="op">=</span> gdf.set_crs(epsg<span class="op">=</span><span class="dv">4326</span>)</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> gdf.to_crs(to_crs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="94b384e0" class="cell" data-time_run="12:59:56p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>sl2_gdf <span class="op">=</span> slx2gdf(sl2_f, <span class="dv">1823</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="d7e56ca8" class="cell" data-time_run="12:59:56p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">"water_depth"</span> <span class="kw">in</span> gdf.columns</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="219">
+<pre><code>True</code></pre>
+</div>
+</div>
+<div id="8ae6fdff" class="cell" data-time_run="12:59:57p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>sl2_gdf.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="221">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">survey</th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">x</th>
+<th data-quarto-table-cell-role="th">y</th>
+<th data-quarto-table-cell-role="th">longitude</th>
+<th data-quarto-table-cell-role="th">latitude</th>
+<th data-quarto-table-cell-role="th">min_range</th>
+<th data-quarto-table-cell-role="th">max_range</th>
+<th data-quarto-table-cell-role="th">water_depth</th>
+<th data-quarto-table-cell-role="th">gps_speed</th>
+<th data-quarto-table-cell-role="th">gps_heading</th>
+<th data-quarto-table-cell-role="th">gps_altitude</th>
+<th data-quarto-table-cell-role="th">bottom_index</th>
+<th data-quarto-table-cell-role="th">frames</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1</th>
+<td>0</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.342999935</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>588</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+<td>POINT (228716.911 525464.863)</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4</th>
+<td>0</td>
+<td>secondary</td>
+<td>2024-07-11 08:13:50.344000101</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>588</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+<td>POINT (228716.911 525464.863)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">7</th>
+<td>0</td>
+<td>downscan</td>
+<td>2024-07-11 08:13:50.404000044</td>
+<td>718714</td>
+<td>6906589</td>
+<td>6.478037</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>2.40792</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>444</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+<td>POINT (228715.693 525464.844)</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">8</th>
+<td>1</td>
+<td>sidescan</td>
+<td>2024-07-11 08:13:50.404999971</td>
+<td>718714</td>
+<td>6906589</td>
+<td>6.478037</td>
+<td>52.71157</td>
+<td>-4.99872</td>
+<td>4.99872</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>214</td>
+<td>[41, 40, 40, 42, 42, 44, 47, 48, 48, 48, 48, 4...</td>
+<td>POINT (228715.693 525464.844)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">9</th>
+<td>1</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.385999918</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.765342</td>
+<td>0.118292</td>
+<td>0.683147</td>
+<td>12.19</td>
+<td>588</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+<td>POINT (228716.911 525464.863)</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="319fa4fd" class="cell" data-time_run="12:59:57p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>sl2_gdf_pr <span class="op">=</span> sl2_gdf[sl2_gdf[<span class="st">"survey"</span>]<span class="op">==</span><span class="st">"primary"</span>]</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>sl2_gdf_pr.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="223">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">survey</th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">x</th>
+<th data-quarto-table-cell-role="th">y</th>
+<th data-quarto-table-cell-role="th">longitude</th>
+<th data-quarto-table-cell-role="th">latitude</th>
+<th data-quarto-table-cell-role="th">min_range</th>
+<th data-quarto-table-cell-role="th">max_range</th>
+<th data-quarto-table-cell-role="th">water_depth</th>
+<th data-quarto-table-cell-role="th">gps_speed</th>
+<th data-quarto-table-cell-role="th">gps_heading</th>
+<th data-quarto-table-cell-role="th">gps_altitude</th>
+<th data-quarto-table-cell-role="th">bottom_index</th>
+<th data-quarto-table-cell-role="th">frames</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1</th>
+<td>0</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.342999935</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.0</td>
+<td>3.99288</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>588</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+<td>POINT (228716.911 525464.863)</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>1</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.385999918</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.0</td>
+<td>3.99288</td>
+<td>0.765342</td>
+<td>0.118292</td>
+<td>0.683147</td>
+<td>12.19</td>
+<td>588</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+<td>POINT (228716.911 525464.863)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>2</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.473000050</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.0</td>
+<td>3.99288</td>
+<td>0.763347</td>
+<td>0.117554</td>
+<td>0.690681</td>
+<td>12.19</td>
+<td>587</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+<td>POINT (228716.911 525464.863)</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">26</th>
+<td>3</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.519000052</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.0</td>
+<td>3.99288</td>
+<td>0.763347</td>
+<td>0.117210</td>
+<td>0.700539</td>
+<td>12.19</td>
+<td>587</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+<td>POINT (228716.911 525464.863)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">35</th>
+<td>4</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.607000113</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.0</td>
+<td>3.99288</td>
+<td>0.751389</td>
+<td>0.116882</td>
+<td>0.709950</td>
+<td>12.19</td>
+<td>578</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+<td>POINT (228716.911 525464.863)</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="d953af8d" class="cell" data-time_run="12:59:57p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>sl2_gdf_pr[<span class="st">'bottom_height'</span>] <span class="op">=</span> <span class="fl">12.53</span><span class="op">/</span><span class="dv">100</span> <span class="op">-</span> sl2_gdf_pr[<span class="st">'water_depth'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/app/data/.local/lib/python3.12/site-packages/geopandas/geodataframe.py:1968: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  super().__setitem__(key, value)</code></pre>
+</div>
+</div>
+<p>Please explain the DataFrame warning.</p>
+<section id="reply-7" class="level5">
+<h5 class="anchored" data-anchor-id="reply-7">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>This warning occurs because of how you created <code>sl2df_sml_pr</code>. When you filtered the dataframe with:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>sl2df_sml_pr <span class="op">=</span> sl2df_sml[sl2df_sml[<span class="st">"survey"</span>]<span class="op">==</span><span class="st">"primary"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Pandas doesn’t know if this created a <strong>copy</strong> of the data or just a <strong>view</strong> (reference) to the original data. When you then try to add a new column to <code>sl2df_sml_pr</code>, pandas warns you that changes might unexpectedly affect the original <code>sl2df_sml</code> dataframe (or might not work at all).</p>
+<p><strong>The solution:</strong> Use <code>.copy()</code> to explicitly create a new dataframe:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>sl2df_sml_pr <span class="op">=</span> sl2df_sml[sl2df_sml[<span class="st">"survey"</span>]<span class="op">==</span><span class="st">"primary"</span>].copy()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Or use <code>.loc[]</code> for the assignment as the warning suggests.</p>
+<p>Would you like to try fixing this yourself, or do you have questions about why this happens?</p>
+<div id="d4e7d1d6" class="cell" data-time_run="12:59:57p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>sl2_gdf_pr <span class="op">=</span> sl2_gdf[sl2_gdf[<span class="st">"survey"</span>]<span class="op">==</span><span class="st">"primary"</span>].copy()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="e7b293e2" class="cell" data-time_run="12:59:57p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>sl2_gdf_pr[<span class="st">'bottom_height'</span>] <span class="op">=</span> <span class="fl">12.53</span><span class="op">/</span><span class="dv">100</span> <span class="op">-</span> sl2_gdf_pr[<span class="st">'water_depth'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="22c7f8d6" class="cell" data-time_run="12:59:58p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>sl2_gdf_pr.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="231">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">survey</th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">x</th>
+<th data-quarto-table-cell-role="th">y</th>
+<th data-quarto-table-cell-role="th">longitude</th>
+<th data-quarto-table-cell-role="th">latitude</th>
+<th data-quarto-table-cell-role="th">min_range</th>
+<th data-quarto-table-cell-role="th">max_range</th>
+<th data-quarto-table-cell-role="th">water_depth</th>
+<th data-quarto-table-cell-role="th">gps_speed</th>
+<th data-quarto-table-cell-role="th">gps_heading</th>
+<th data-quarto-table-cell-role="th">gps_altitude</th>
+<th data-quarto-table-cell-role="th">bottom_index</th>
+<th data-quarto-table-cell-role="th">frames</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+<th data-quarto-table-cell-role="th">bottom_height</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1</th>
+<td>0</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.342999935</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.0</td>
+<td>3.99288</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>588</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+<td>POINT (228716.911 525464.863)</td>
+<td>-0.640042</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>1</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.385999918</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.0</td>
+<td>3.99288</td>
+<td>0.765342</td>
+<td>0.118292</td>
+<td>0.683147</td>
+<td>12.19</td>
+<td>588</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+<td>POINT (228716.911 525464.863)</td>
+<td>-0.640042</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>2</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.473000050</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.0</td>
+<td>3.99288</td>
+<td>0.763347</td>
+<td>0.117554</td>
+<td>0.690681</td>
+<td>12.19</td>
+<td>587</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+<td>POINT (228716.911 525464.863)</td>
+<td>-0.638047</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">26</th>
+<td>3</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.519000052</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.0</td>
+<td>3.99288</td>
+<td>0.763347</td>
+<td>0.117210</td>
+<td>0.700539</td>
+<td>12.19</td>
+<td>587</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+<td>POINT (228716.911 525464.863)</td>
+<td>-0.638047</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">35</th>
+<td>4</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.607000113</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.0</td>
+<td>3.99288</td>
+<td>0.751389</td>
+<td>0.116882</td>
+<td>0.709950</td>
+<td>12.19</td>
+<td>578</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+<td>POINT (228716.911 525464.863)</td>
+<td>-0.626089</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>How can I check the precision of the <code>latitude</code> and <code>longitude</code> columns?</p>
+</section>
+<section id="reply-8" class="level5">
+<h5 class="anchored" data-anchor-id="reply-8">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>To check the precision of the <code>latitude</code> and <code>longitude</code> columns, you can look at how many decimal places the values have. Here are a few approaches:</p>
+<p><strong>Option 1:</strong> Convert to string and check the length after the decimal point:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>sl2_gdf_pr[<span class="st">'latitude'</span>].astype(<span class="bu">str</span>).<span class="bu">str</span>.split(<span class="st">'.'</span>).<span class="bu">str</span>[<span class="dv">1</span>].<span class="bu">str</span>.<span class="bu">len</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Option 2:</strong> Calculate the smallest difference between consecutive values to see the resolution.</p>
+<p><strong>Option 3:</strong> Look at a few sample values directly to visually inspect the decimal places.</p>
+<p>Which approach would you like to try first, or do you have a specific reason for checking the precision?</p>
+<p>Do I understand correctly that the visualisation from a Dataframe shows the complete numbers and doesn’t truncate?</p>
+</section>
+<section id="reply-9" class="level5">
+<h5 class="anchored" data-anchor-id="reply-9">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>Not quite - pandas DataFrames <strong>do truncate</strong> displayed values by default for readability, even though the full precision is stored internally.</p>
+<p>You can check the actual precision by:</p>
+<ol type="1">
+<li>Using <code>.iloc[0]</code> to access a single value directly (this shows more precision than the table view)</li>
+<li>Checking pandas display options with <code>pd.get_option('display.precision')</code></li>
+<li>Setting display precision higher with <code>pd.set_option('display.precision', 10)</code> (or whatever number you want)</li>
+</ol>
+<p>Try accessing a single latitude value directly - does it show more decimal places than what you see in the table display?Not quite - pandas DataFrames <strong>do</strong> truncate displayed values by default! When you see a value like <code>52.71157</code> in the display, there might actually be more decimal places that aren’t being shown.</p>
+<p>To see the full precision of the values, you can:</p>
+<ol type="1">
+<li>Use <code>pd.set_option('display.precision', 20)</code> to show more decimal places in the display</li>
+<li>Access individual values directly with <code>.iloc[]</code> or <code>.loc[]</code> and print them</li>
+<li>Check the actual dtype of the column - if it’s <code>float64</code>, it can store about 15-17 significant decimal digits</li>
+</ol>
+<p>Would you like to try one of these methods to see the full precision of your latitude/longitude values?</p>
+<div id="574209dc" class="cell" data-time_run="12:59:58p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>sl2_gdf_pr[<span class="st">'longitude'</span>].iloc[<span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="233">
+<pre><code>np.float64(6.478055370591692)</code></pre>
+</div>
+</div>
+<p>How can I check if the precision of the <code>geometry</code> column is the same?</p>
+</section>
+<section id="reply-10" class="level5">
+<h5 class="anchored" data-anchor-id="reply-10">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>Good question! The <code>geometry</code> column contains Point objects (not just numbers), so you need to extract the coordinates from the geometry first.</p>
+<p>You can access the x and y coordinates of a Point geometry using <code>.x</code> and <code>.y</code> attributes:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>sl2_gdf_pr[<span class="st">'geometry'</span>].iloc[<span class="dv">0</span>].x</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>sl2_gdf_pr[<span class="st">'geometry'</span>].iloc[<span class="dv">0</span>].y</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This will show you the precision of the transformed coordinates (in RD New/EPSG:28992). Try it and compare - do they have similar precision to the original longitude/latitude values?</p>
+<div id="697ee39e" class="cell" data-time_run="12:59:58p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>sl2_gdf_pr[<span class="st">'geometry'</span>].iloc[<span class="dv">0</span>].x</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>sl2_gdf_pr[<span class="st">'geometry'</span>].iloc[<span class="dv">0</span>].y</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="235">
+<pre><code>525464.8625997787</code></pre>
+</div>
+</div>
+<p>I think that all measurements with the same “bottom_index” also have the same longitude and latitude and water_depth. How can I check that assumption?</p>
+</section>
+<section id="reply-11" class="level5">
+<h5 class="anchored" data-anchor-id="reply-11">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>Good hypothesis! To check this, you could group by <code>bottom_index</code> and see if the values within each group are all the same.</p>
+<p>One approach is to use <code>.groupby()</code> with <code>.nunique()</code> (number of unique values). If a column has only 1 unique value per group, then all values in that group are identical.</p>
+<p>Try something like:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>sl2df_sml_pr.groupby(<span class="st">'bottom_index'</span>)[[<span class="st">'longitude'</span>, <span class="st">'latitude'</span>, <span class="st">'water_depth'</span>]].nunique()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This will show you how many unique values exist for each column within each <code>bottom_index</code> group. What do you expect to see if your assumption is correct?</p>
+<div id="686dcba0" class="cell" data-time_run="12:59:58p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>sl2_d.df[sl2_d.df[<span class="st">'survey'</span>]<span class="op">==</span><span class="st">"primary"</span>].groupby(<span class="st">'bottom_index'</span>)[[<span class="st">'longitude'</span>, <span class="st">'latitude'</span>, <span class="st">'water_depth'</span>]].nunique()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="237">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">longitude</th>
+<th data-quarto-table-cell-role="th">latitude</th>
+<th data-quarto-table-cell-role="th">water_depth</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">bottom_index</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">473</th>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">475</th>
+<td>2</td>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">476</th>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">478</th>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">479</th>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">808</th>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">809</th>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">810</th>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">811</th>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">813</th>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+<p>259 rows × 3 columns</p>
+</div>
+</div>
+</div>
+<div id="8bc61d9c" class="cell" data-time_run="12:59:58p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>sl2_d.df[sl2_d.df[<span class="st">"bottom_index"</span>]<span class="op">==</span><span class="dv">475</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="239">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">survey</th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">x</th>
+<th data-quarto-table-cell-role="th">y</th>
+<th data-quarto-table-cell-role="th">longitude</th>
+<th data-quarto-table-cell-role="th">latitude</th>
+<th data-quarto-table-cell-role="th">min_range</th>
+<th data-quarto-table-cell-role="th">max_range</th>
+<th data-quarto-table-cell-role="th">water_depth</th>
+<th data-quarto-table-cell-role="th">gps_speed</th>
+<th data-quarto-table-cell-role="th">gps_heading</th>
+<th data-quarto-table-cell-role="th">gps_altitude</th>
+<th data-quarto-table-cell-role="th">bottom_index</th>
+<th data-quarto-table-cell-role="th">frames</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4126</th>
+<td>485</td>
+<td>downscan</td>
+<td>2024-07-11 08:14:23.638000011</td>
+<td>718673</td>
+<td>6906583</td>
+<td>6.477668</td>
+<td>52.711537</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818000</td>
+<td>0.771551</td>
+<td>4.662271</td>
+<td>13.450000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4134</th>
+<td>486</td>
+<td>downscan</td>
+<td>2024-07-11 08:14:23.678999901</td>
+<td>718673</td>
+<td>6906583</td>
+<td>6.477668</td>
+<td>52.711537</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818000</td>
+<td>0.767841</td>
+<td>4.660583</td>
+<td>13.450000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4177</th>
+<td>491</td>
+<td>downscan</td>
+<td>2024-07-11 08:14:24.032000065</td>
+<td>718673</td>
+<td>6906583</td>
+<td>6.477668</td>
+<td>52.711537</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818029</td>
+<td>0.743761</td>
+<td>4.644800</td>
+<td>13.450000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4185</th>
+<td>492</td>
+<td>downscan</td>
+<td>2024-07-11 08:14:24.076999903</td>
+<td>718673</td>
+<td>6906583</td>
+<td>6.477668</td>
+<td>52.711537</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818029</td>
+<td>0.741315</td>
+<td>4.641526</td>
+<td>13.450000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4211</th>
+<td>495</td>
+<td>downscan</td>
+<td>2024-07-11 08:14:24.296000004</td>
+<td>718673</td>
+<td>6906583</td>
+<td>6.477668</td>
+<td>52.711537</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818029</td>
+<td>0.732592</td>
+<td>4.624510</td>
+<td>13.339999</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4219</th>
+<td>496</td>
+<td>downscan</td>
+<td>2024-07-11 08:14:24.342000008</td>
+<td>718673</td>
+<td>6906583</td>
+<td>6.477668</td>
+<td>52.711537</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818029</td>
+<td>0.730653</td>
+<td>4.619778</td>
+<td>13.339999</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4228</th>
+<td>497</td>
+<td>downscan</td>
+<td>2024-07-11 08:14:24.430999994</td>
+<td>718673</td>
+<td>6906583</td>
+<td>6.477668</td>
+<td>52.711537</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818029</td>
+<td>0.729701</td>
+<td>4.607848</td>
+<td>13.339999</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4236</th>
+<td>498</td>
+<td>downscan</td>
+<td>2024-07-11 08:14:24.471999884</td>
+<td>718673</td>
+<td>6906583</td>
+<td>6.477668</td>
+<td>52.711537</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818029</td>
+<td>0.729258</td>
+<td>4.600700</td>
+<td>13.339999</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4245</th>
+<td>499</td>
+<td>downscan</td>
+<td>2024-07-11 08:14:24.559999943</td>
+<td>718673</td>
+<td>6906583</td>
+<td>6.477668</td>
+<td>52.711537</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818029</td>
+<td>0.728834</td>
+<td>4.593876</td>
+<td>13.339999</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4253</th>
+<td>500</td>
+<td>downscan</td>
+<td>2024-07-11 08:14:24.805999994</td>
+<td>718672</td>
+<td>6906583</td>
+<td>6.477659</td>
+<td>52.711537</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818029</td>
+<td>0.724261</td>
+<td>4.552243</td>
+<td>13.339999</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8355</th>
+<td>981</td>
+<td>downscan</td>
+<td>2024-07-11 08:14:57.490000010</td>
+<td>718705</td>
+<td>6906574</td>
+<td>6.477956</td>
+<td>52.711488</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818299</td>
+<td>0.767930</td>
+<td>1.476679</td>
+<td>13.010000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">8363</th>
+<td>982</td>
+<td>downscan</td>
+<td>2024-07-11 08:14:57.533999919</td>
+<td>718705</td>
+<td>6906574</td>
+<td>6.477956</td>
+<td>52.711488</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818299</td>
+<td>0.767112</td>
+<td>1.476197</td>
+<td>13.010000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8372</th>
+<td>983</td>
+<td>downscan</td>
+<td>2024-07-11 08:14:57.622999907</td>
+<td>718706</td>
+<td>6906574</td>
+<td>6.477965</td>
+<td>52.711488</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818299</td>
+<td>0.765586</td>
+<td>1.475298</td>
+<td>13.010000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">8380</th>
+<td>984</td>
+<td>downscan</td>
+<td>2024-07-11 08:14:57.663000107</td>
+<td>718706</td>
+<td>6906574</td>
+<td>6.477965</td>
+<td>52.711488</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818299</td>
+<td>0.765586</td>
+<td>1.475298</td>
+<td>13.010000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">11026</th>
+<td>1294</td>
+<td>downscan</td>
+<td>2024-07-11 08:15:19.604000092</td>
+<td>718707</td>
+<td>6906570</td>
+<td>6.477974</td>
+<td>52.711466</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818165</td>
+<td>0.869475</td>
+<td>4.545829</td>
+<td>12.780000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">14890</th>
+<td>1749</td>
+<td>downscan</td>
+<td>2024-07-11 08:15:50.477999926</td>
+<td>718674</td>
+<td>6906553</td>
+<td>6.477677</td>
+<td>52.711374</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.817856</td>
+<td>0.721194</td>
+<td>2.861162</td>
+<td>16.289999</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14898</th>
+<td>1750</td>
+<td>downscan</td>
+<td>2024-07-11 08:15:50.517999887</td>
+<td>718674</td>
+<td>6906553</td>
+<td>6.477677</td>
+<td>52.711374</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.817856</td>
+<td>0.721194</td>
+<td>2.861162</td>
+<td>16.289999</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">14907</th>
+<td>1751</td>
+<td>downscan</td>
+<td>2024-07-11 08:15:50.607000113</td>
+<td>718674</td>
+<td>6906553</td>
+<td>6.477677</td>
+<td>52.711374</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.817856</td>
+<td>0.730854</td>
+<td>2.817020</td>
+<td>16.289999</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14915</th>
+<td>1752</td>
+<td>downscan</td>
+<td>2024-07-11 08:15:50.651000023</td>
+<td>718674</td>
+<td>6906553</td>
+<td>6.477677</td>
+<td>52.711374</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.817856</td>
+<td>0.735357</td>
+<td>2.795280</td>
+<td>16.289999</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">14941</th>
+<td>1755</td>
+<td>downscan</td>
+<td>2024-07-11 08:15:50.871000051</td>
+<td>718674</td>
+<td>6906553</td>
+<td>6.477677</td>
+<td>52.711374</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.816994</td>
+<td>0.755322</td>
+<td>2.713903</td>
+<td>16.289999</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14949</th>
+<td>1756</td>
+<td>downscan</td>
+<td>2024-07-11 08:15:50.914999962</td>
+<td>718674</td>
+<td>6906553</td>
+<td>6.477677</td>
+<td>52.711374</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.816994</td>
+<td>0.760077</td>
+<td>2.694470</td>
+<td>16.289999</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">16574</th>
+<td>1948</td>
+<td>downscan</td>
+<td>2024-07-11 08:16:03.282000065</td>
+<td>718689</td>
+<td>6906542</td>
+<td>6.477812</td>
+<td>52.711313</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818029</td>
+<td>0.860543</td>
+<td>2.049667</td>
+<td>16.420000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16582</th>
+<td>1949</td>
+<td>downscan</td>
+<td>2024-07-11 08:16:03.325999975</td>
+<td>718689</td>
+<td>6906542</td>
+<td>6.477812</td>
+<td>52.711313</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818029</td>
+<td>0.861424</td>
+<td>2.046940</td>
+<td>16.420000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">16778</th>
+<td>1972</td>
+<td>downscan</td>
+<td>2024-07-11 08:16:04.865000010</td>
+<td>718691</td>
+<td>6906541</td>
+<td>6.477830</td>
+<td>52.711308</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818012</td>
+<td>0.885202</td>
+<td>1.996868</td>
+<td>16.559999</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16786</th>
+<td>1973</td>
+<td>downscan</td>
+<td>2024-07-11 08:16:04.913000107</td>
+<td>718691</td>
+<td>6906541</td>
+<td>6.477830</td>
+<td>52.711308</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818012</td>
+<td>0.887689</td>
+<td>1.995748</td>
+<td>16.559999</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">16829</th>
+<td>1978</td>
+<td>downscan</td>
+<td>2024-07-11 08:16:05.263000010</td>
+<td>718691</td>
+<td>6906541</td>
+<td>6.477830</td>
+<td>52.711308</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818012</td>
+<td>0.895980</td>
+<td>1.989209</td>
+<td>16.590000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16837</th>
+<td>1979</td>
+<td>downscan</td>
+<td>2024-07-11 08:16:05.302999973</td>
+<td>718691</td>
+<td>6906541</td>
+<td>6.477830</td>
+<td>52.711308</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818012</td>
+<td>0.895250</td>
+<td>1.988437</td>
+<td>16.590000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">16846</th>
+<td>1980</td>
+<td>downscan</td>
+<td>2024-07-11 08:16:05.392999887</td>
+<td>718691</td>
+<td>6906541</td>
+<td>6.477830</td>
+<td>52.711308</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818012</td>
+<td>0.893889</td>
+<td>1.986997</td>
+<td>16.590000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16854</th>
+<td>1981</td>
+<td>downscan</td>
+<td>2024-07-11 08:16:05.437000036</td>
+<td>718691</td>
+<td>6906541</td>
+<td>6.477830</td>
+<td>52.711308</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818012</td>
+<td>0.894617</td>
+<td>1.986325</td>
+<td>16.590000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">16863</th>
+<td>1982</td>
+<td>downscan</td>
+<td>2024-07-11 08:16:05.528000115</td>
+<td>718691</td>
+<td>6906541</td>
+<td>6.477830</td>
+<td>52.711308</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818012</td>
+<td>0.895977</td>
+<td>1.985072</td>
+<td>16.590000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16871</th>
+<td>1983</td>
+<td>downscan</td>
+<td>2024-07-11 08:16:05.569000006</td>
+<td>718691</td>
+<td>6906541</td>
+<td>6.477830</td>
+<td>52.711308</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.818012</td>
+<td>0.895977</td>
+<td>1.985072</td>
+<td>16.590000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">18267</th>
+<td>2147</td>
+<td>downscan</td>
+<td>2024-07-11 08:16:17.476000071</td>
+<td>718708</td>
+<td>6906535</td>
+<td>6.477983</td>
+<td>52.711275</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.817856</td>
+<td>0.894259</td>
+<td>1.889540</td>
+<td>15.860000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18293</th>
+<td>2150</td>
+<td>downscan</td>
+<td>2024-07-11 08:16:17.694000006</td>
+<td>718708</td>
+<td>6906535</td>
+<td>6.477983</td>
+<td>52.711275</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.817856</td>
+<td>0.891825</td>
+<td>1.882835</td>
+<td>15.860000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">18301</th>
+<td>2151</td>
+<td>downscan</td>
+<td>2024-07-11 08:16:17.737999916</td>
+<td>718708</td>
+<td>6906535</td>
+<td>6.477983</td>
+<td>52.711275</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.817856</td>
+<td>0.891284</td>
+<td>1.881345</td>
+<td>15.860000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18579</th>
+<td>2184</td>
+<td>downscan</td>
+<td>2024-07-11 08:16:19.805000067</td>
+<td>718710</td>
+<td>6906534</td>
+<td>6.478001</td>
+<td>52.711270</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.817445</td>
+<td>0.842878</td>
+<td>1.845920</td>
+<td>15.690000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">18587</th>
+<td>2185</td>
+<td>downscan</td>
+<td>2024-07-11 08:16:19.851000071</td>
+<td>718710</td>
+<td>6906534</td>
+<td>6.478001</td>
+<td>52.711270</td>
+<td>0.0</td>
+<td>2.40792</td>
+<td>0.817445</td>
+<td>0.842289</td>
+<td>1.846901</td>
+<td>15.690000</td>
+<td>475</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">24658</th>
+<td>2900</td>
+<td>primary</td>
+<td>2024-07-11 08:17:07.957000017</td>
+<td>718679</td>
+<td>6906530</td>
+<td>6.477722</td>
+<td>52.711248</td>
+<td>0.0</td>
+<td>3.99288</td>
+<td>0.618584</td>
+<td>0.582718</td>
+<td>4.965398</td>
+<td>11.560000</td>
+<td>475</td>
+<td>[216, 216, 216, 216, 216, 216, 216, 216, 216, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">24661</th>
+<td>2900</td>
+<td>secondary</td>
+<td>2024-07-11 08:17:07.957999945</td>
+<td>718679</td>
+<td>6906530</td>
+<td>6.477722</td>
+<td>52.711248</td>
+<td>0.0</td>
+<td>3.99288</td>
+<td>0.618584</td>
+<td>0.582718</td>
+<td>4.965398</td>
+<td>11.560000</td>
+<td>475</td>
+<td>[216, 216, 216, 216, 216, 216, 216, 216, 216, ...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">24666</th>
+<td>2901</td>
+<td>primary</td>
+<td>2024-07-11 08:17:07.999000072</td>
+<td>718678</td>
+<td>6906531</td>
+<td>6.477713</td>
+<td>52.711253</td>
+<td>0.0</td>
+<td>3.99288</td>
+<td>0.618584</td>
+<td>0.652614</td>
+<td>5.090680</td>
+<td>11.570000</td>
+<td>475</td>
+<td>[216, 216, 216, 216, 216, 216, 216, 216, 216, ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">24669</th>
+<td>2901</td>
+<td>secondary</td>
+<td>2024-07-11 08:17:08.000000000</td>
+<td>718678</td>
+<td>6906531</td>
+<td>6.477713</td>
+<td>52.711253</td>
+<td>0.0</td>
+<td>3.99288</td>
+<td>0.618584</td>
+<td>0.652614</td>
+<td>5.090680</td>
+<td>11.570000</td>
+<td>475</td>
+<td>[216, 216, 216, 216, 216, 216, 216, 216, 216, ...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>It is mostly true that the same bottom_index is the same location and depth. But not always. So we must filter the resulting table on same locations. Could we use something like <code>.unique</code> to only keep those points that have a unique <code>longitude</code>, <code>latitude</code> combination?</p>
+</section>
+<section id="reply-12" class="level5">
+<h5 class="anchored" data-anchor-id="reply-12">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>Yes, good thinking! You can use <code>.drop_duplicates()</code> to keep only unique combinations of longitude and latitude.</p>
+<p>The method would look like:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>df_unique <span class="op">=</span> df.drop_duplicates(subset<span class="op">=</span>[<span class="st">'longitude'</span>, <span class="st">'latitude'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This keeps the first occurrence of each unique longitude/latitude pair and removes the rest.</p>
+<p>Would you like to try applying this to your filtered primary survey data? Or do you have questions about how <code>drop_duplicates()</code> works?</p>
+<p>Great. I lost my train of thought. We are building a function that accepts the GeoDataframe from the function <code>sl2gdf</code> and an integer wich is the msrmnt_height: int, # Height of the measurement instrument at time of taking the measurements. The function filter the dataframe on “survey”==“primary”, and remove duplicates of (“longitude”, “latitude”, “water_depth”). Then it should create a new column “bottom_height” for which the values can be calculated by <code>msrmnt_height/100 - water_depth</code>. All parts of this function we tested above. Am I missing something? Can you write this function based on the tests above? The result should be a new GeoDataframe. We can name the function: clean_gdf.</p>
+</section>
+<section id="reply-13" class="level5">
+<h5 class="anchored" data-anchor-id="reply-13">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>Based on your tests above, here’s the <code>clean_gdf</code> function:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean_gdf(</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>    gdf: gpd.GeoDataFrame, <span class="co"># GeoDataFrame from sl2gdf</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>    msrmnt_height: <span class="bu">int</span>, <span class="co"># Height of measurement instrument in cm above NAP</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> gpd.GeoDataFrame: <span class="co"># Cleaned GeoDataFrame with bottom_height column</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Filter primary survey data, remove duplicates, and calculate bottom height in mNAP"</span></span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>    gdf_primary <span class="op">=</span> gdf[gdf[<span class="st">"survey"</span>] <span class="op">==</span> <span class="st">"primary"</span>].copy()</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>    gdf_unique <span class="op">=</span> gdf_primary.drop_duplicates(subset<span class="op">=</span>[<span class="st">'longitude'</span>, <span class="st">'latitude'</span>, <span class="st">'water_depth'</span>])</span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>    gdf_unique[<span class="st">'bottom_height'</span>] <span class="op">=</span> msrmnt_height <span class="op">/</span> <span class="dv">100</span> <span class="op">-</span> gdf_unique[<span class="st">'water_depth'</span>]</span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> gdf_unique</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Does this capture everything you need, or would you like to adjust anything?</p>
+<div id="a9647a5d" class="cell" data-time_run="12:59:59p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean_gdf(</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>    gdf: gpd.GeoDataFrame, <span class="co"># GeoDataFrame from sl2gdf</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>    msrmnt_height: <span class="bu">int</span>, <span class="co"># Height of measurement instrument in cm above NAP</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> gpd.GeoDataFrame: <span class="co"># Cleaned GeoDataFrame with bottom_height column</span></span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Filter primary survey data, remove duplicates, and calculate bottom height in mNAP"</span></span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>    gdf_primary <span class="op">=</span> gdf[gdf[<span class="st">"survey"</span>] <span class="op">==</span> <span class="st">"primary"</span>].copy()</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>    gdf_unique <span class="op">=</span> gdf_primary.drop_duplicates(subset<span class="op">=</span>[<span class="st">'longitude'</span>, <span class="st">'latitude'</span>, <span class="st">'water_depth'</span>])</span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>    gdf_unique.loc[:, <span class="st">'bottom_height'</span>] <span class="op">=</span> msrmnt_height <span class="op">/</span> <span class="dv">100</span> <span class="op">-</span> gdf_unique[<span class="st">'water_depth'</span>]</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> gdf_unique</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="8f6adfaa" class="cell" data-time_run="12:59:59p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>cln_gdf <span class="op">=</span> clean_gdf(sl2_gdf, <span class="dv">1823</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/app/data/.local/lib/python3.12/site-packages/geopandas/geodataframe.py:1968: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  super().__setitem__(key, value)</code></pre>
+</div>
+</div>
+<p>Why do I get this warning in the function <code>clean_gdf</code>?</p>
+</section>
+<section id="reply-14" class="level5">
+<h5 class="anchored" data-anchor-id="reply-14">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>The warning occurs because <code>.drop_duplicates()</code> might return a view rather than a copy, and then you’re trying to modify it.</p>
+<p>The fix is to add <code>.copy()</code> after <code>.drop_duplicates()</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>gdf_unique <span class="op">=</span> gdf_primary.drop_duplicates(subset<span class="op">=</span>[<span class="st">'longitude'</span>, <span class="st">'latitude'</span>, <span class="st">'water_depth'</span>]).copy()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This ensures <code>gdf_unique</code> is definitely a new dataframe, not a view. Would you like to update the function with this change?</p>
+<p>Is this really the best way? We now create a bunch of copies in memory, just to clean the dataframe.</p>
+</section>
+<section id="reply-15" class="level5">
+<h5 class="anchored" data-anchor-id="reply-15">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>You’re absolutely right to question this! Creating multiple copies is inefficient, especially with large datasets.</p>
+<p>A better approach would be to chain the operations and only make one copy at the end:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>gdf_clean <span class="op">=</span> (gdf[gdf[<span class="st">"survey"</span>] <span class="op">==</span> <span class="st">"primary"</span>]</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>             .drop_duplicates(subset<span class="op">=</span>[<span class="st">'longitude'</span>, <span class="st">'latitude'</span>, <span class="st">'water_depth'</span>])</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>             .copy())</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>gdf_clean[<span class="st">'bottom_height'</span>] <span class="op">=</span> msrmnt_height <span class="op">/</span> <span class="dv">100</span> <span class="op">-</span> gdf_clean[<span class="st">'water_depth'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Or even more efficiently, you could use <code>.assign()</code> to add the column without triggering the warning:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> (gdf[gdf[<span class="st">"survey"</span>] <span class="op">==</span> <span class="st">"primary"</span>]</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>        .drop_duplicates(subset<span class="op">=</span>[<span class="st">'longitude'</span>, <span class="st">'latitude'</span>, <span class="st">'water_depth'</span>])</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>        .assign(bottom_height<span class="op">=</span><span class="kw">lambda</span> x: msrmnt_height <span class="op">/</span> <span class="dv">100</span> <span class="op">-</span> x[<span class="st">'water_depth'</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This creates only one copy and avoids the warning entirely. Would you like to try refactoring your function with one of these approaches?</p>
+<p>There also is another issue. Sometimes we do have the same location (e.g.&nbsp;‘longitude’, ‘latitude’) but different heights. This is probably due to the fact that the depth meter creates a pulse almost every second, but the location is rounded off to respectively 6 and 5 numbers after the diggit. So I actually want to drop the long-lat duplicates and take the mean of the merged ‘water_depth’.</p>
+</section>
+<section id="reply-16" class="level5">
+<h5 class="anchored" data-anchor-id="reply-16">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>Good observation! So you want to group by longitude and latitude, then take the mean of <code>water_depth</code> for each unique location.</p>
+<p>You can use <code>.groupby()</code> with <code>.agg()</code> to accomplish this. The tricky part is handling the geometry column and deciding what to do with the other columns (like datetime, gps_speed, etc.).</p>
+<p>For the geometry, you could keep the first point since they’re all at the same location. For other columns, you’ll need to decide: keep first? mean? something else?</p>
+<p>Would you like to try writing the groupby operation yourself, or would you like me to show you an example of how to structure it?</p>
+<div id="454a19f8" class="cell" data-time_run="12:59:59p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cc086c60" class="cell" data-time_run="1:00:00p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>gdf_grpd <span class="op">=</span> gdf.groupby([<span class="st">'longitude'</span>, <span class="st">'latitude'</span>], as_index<span class="op">=</span><span class="va">False</span>).agg(</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>    mean_depth<span class="op">=</span>pd.NamedAgg(column<span class="op">=</span><span class="st">"water_depth"</span>, aggfunc<span class="op">=</span><span class="st">"mean"</span>),</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>    min_depth<span class="op">=</span>pd.NamedAgg(column<span class="op">=</span><span class="st">"water_depth"</span>, aggfunc<span class="op">=</span><span class="st">"min"</span>),</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>    max_depth<span class="op">=</span>pd.NamedAgg(column<span class="op">=</span><span class="st">"water_depth"</span>, aggfunc<span class="op">=</span><span class="st">"max"</span>),</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>    geometery<span class="op">=</span>pd.NamedAgg(column<span class="op">=</span><span class="st">"geometry"</span>, aggfunc<span class="op">=</span><span class="st">"first"</span>),</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>    datetime<span class="op">=</span>pd.NamedAgg(column<span class="op">=</span><span class="st">"datetime"</span>, aggfunc<span class="op">=</span><span class="st">"mean"</span>)</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="728ac084" class="cell" data-time_run="1:00:00p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>gdf_grpd.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="249">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">longitude</th>
+<th data-quarto-table-cell-role="th">latitude</th>
+<th data-quarto-table-cell-role="th">mean_depth</th>
+<th data-quarto-table-cell-role="th">min_depth</th>
+<th data-quarto-table-cell-role="th">max_depth</th>
+<th data-quarto-table-cell-role="th">geometery</th>
+<th data-quarto-table-cell-role="th">datetime</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>6.478037</td>
+<td>52.71157</td>
+<td>0.764344</td>
+<td>0.763347</td>
+<td>0.765342</td>
+<td>POINT (228715.693 525464.844)</td>
+<td>2024-07-11 08:13:50.491500032</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.764344</td>
+<td>0.763347</td>
+<td>0.765342</td>
+<td>POINT (228716.911 525464.863)</td>
+<td>2024-07-11 08:13:50.430749952</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="7a42097b" class="cell" data-time_run="1:00:00p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean_gdf(</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>    gdf: gpd.GeoDataFrame, <span class="co"># GeoDataFrame from sl2gdf</span></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>    msrmnt_height: <span class="bu">int</span>, <span class="co"># Height of measurement instrument in cm above NAP</span></span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> gpd.GeoDataFrame: <span class="co"># Cleaned GeoDataFrame with bottom_height column</span></span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Filter primary survey data, remove duplicates, and calculate bottom height in mNAP"</span></span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (gdf[gdf[<span class="st">"survey"</span>]<span class="op">==</span><span class="st">"primary"</span>]</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>            .drop_duplicates(subset<span class="op">=</span>[<span class="st">'longitude'</span>, <span class="st">'latitude'</span>, <span class="st">'water_depth'</span>])</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>            .assign(bottom_height<span class="op">=</span><span class="kw">lambda</span> x: msrmnt_height <span class="op">/</span> <span class="dv">100</span> <span class="op">-</span> x[<span class="st">'water_depth'</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="9d16030d" class="cell" data-time_run="1:00:00p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean_gdf(</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>    gdf: gpd.GeoDataFrame, <span class="co"># GeoDataFrame from sl2gdf</span></span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>    msrmnt_height: <span class="bu">int</span>, <span class="co"># Height of measurement instrument in cm above NAP</span></span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> gpd.GeoDataFrame: <span class="co"># Cleaned GeoDataFrame with bottom_height column</span></span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Filter primary survey data, remove duplicates, and calculate bottom height in mNAP"</span></span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (gdf[gdf[<span class="st">"survey"</span>]<span class="op">==</span><span class="st">"primary"</span>]</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>            .groupby([<span class="st">'longitude'</span>, <span class="st">'latitude'</span>], as_index<span class="op">=</span><span class="va">False</span>).agg(</span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>                mean_depth<span class="op">=</span>pd.NamedAgg(column<span class="op">=</span><span class="st">"water_depth"</span>, aggfunc<span class="op">=</span><span class="st">"mean"</span>),</span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>                min_depth<span class="op">=</span>pd.NamedAgg(column<span class="op">=</span><span class="st">"water_depth"</span>, aggfunc<span class="op">=</span><span class="st">"min"</span>),</span>
+<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a>                max_depth<span class="op">=</span>pd.NamedAgg(column<span class="op">=</span><span class="st">"water_depth"</span>, aggfunc<span class="op">=</span><span class="st">"max"</span>),</span>
+<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a>                geometry<span class="op">=</span>pd.NamedAgg(column<span class="op">=</span><span class="st">"geometry"</span>, aggfunc<span class="op">=</span><span class="st">"first"</span>),</span>
+<span id="cb62-12"><a href="#cb62-12" aria-hidden="true" tabindex="-1"></a>                datetime<span class="op">=</span>pd.NamedAgg(column<span class="op">=</span><span class="st">"datetime"</span>, aggfunc<span class="op">=</span><span class="st">"mean"</span>)</span>
+<span id="cb62-13"><a href="#cb62-13" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb62-14"><a href="#cb62-14" aria-hidden="true" tabindex="-1"></a>            .assign(bottom_height<span class="op">=</span><span class="kw">lambda</span> x: msrmnt_height <span class="op">/</span> <span class="dv">100</span> <span class="op">-</span> x[<span class="st">'mean_depth'</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>When I use <code>clean_gdf</code> the returned object is a Pandas Dataframe, not a GeoDataFrame. This probably is the result of the <code>.groupby</code> method that uses the <code>agg</code> method. How can I solve this? I want a GeoDataFrame?</p>
+</section>
+<section id="reply-17" class="level5">
+<h5 class="anchored" data-anchor-id="reply-17">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>Good catch! When you use <code>.groupby().agg()</code> on a GeoDataFrame, it returns a regular DataFrame, losing the GeoDataFrame properties.</p>
+<p>To fix this, you need to convert it back to a GeoDataFrame after the aggregation. You can use:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>gpd.GeoDataFrame(result, geometry<span class="op">=</span><span class="st">'geometry'</span>, crs<span class="op">=</span>gdf.crs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Where <code>result</code> is your aggregated dataframe. You’ll need to make sure to preserve the original CRS from the input GeoDataFrame.</p>
+<p>Would you like to try adding this conversion to your <code>clean_gdf</code> function?</p>
+<hr>
+</section>
+</section>
+<section id="clean_gdf" class="level3">
+<h3 class="anchored" data-anchor-id="clean_gdf">clean_gdf</h3>
+<blockquote class="blockquote">
+<pre><code> clean_gdf (gdf:geopandas.geodataframe.GeoDataFrame, msrmnt_height:int)</code></pre>
+</blockquote>
+<p><em>Filter primary survey data, remove duplicates, and calculate bottom height in mNAP</em></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 38%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>gdf</td>
+<td>GeoDataFrame</td>
+<td>GeoDataFrame from sl2gdf</td>
+</tr>
+<tr class="even">
+<td>msrmnt_height</td>
+<td>int</td>
+<td>Height of measurement instrument in cm above NAP</td>
+</tr>
+<tr class="odd">
+<td><strong>Returns</strong></td>
+<td><strong>GeoDataFrame</strong></td>
+<td><strong>Cleaned GeoDataFrame with bottom_height column</strong></td>
+</tr>
+</tbody>
+</table>
+<div id="55583aa1" class="cell" data-time_run="1:06:46p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>cln_gdf <span class="op">=</span> clean_gdf(sl2_gdf, <span class="dv">1823</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="7d8507fe" class="cell" data-time_run="1:07:12p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(cln_gdf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="292">
+<pre><code>geopandas.geodataframe.GeoDataFrame</code></pre>
+</div>
+</div>
+<div id="0b2d9c51" class="cell" data-time_run="1:06:50p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>cln_gdf.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="288">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">longitude</th>
+<th data-quarto-table-cell-role="th">latitude</th>
+<th data-quarto-table-cell-role="th">mean_depth</th>
+<th data-quarto-table-cell-role="th">min_depth</th>
+<th data-quarto-table-cell-role="th">max_depth</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">bottom_height</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>6.477659</td>
+<td>52.711384</td>
+<td>0.896514</td>
+<td>0.893738</td>
+<td>0.898493</td>
+<td>POINT (228690.424 525443.801)</td>
+<td>2024-07-11 08:15:47.497600000</td>
+<td>17.333487</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>6.477659</td>
+<td>52.711390</td>
+<td>0.866144</td>
+<td>0.856252</td>
+<td>0.893738</td>
+<td>POINT (228690.415 525444.408)</td>
+<td>2024-07-11 08:15:46.907285760</td>
+<td>17.363855</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>6.477659</td>
+<td>52.711395</td>
+<td>0.833876</td>
+<td>0.833876</td>
+<td>0.833876</td>
+<td>POINT (228690.406 525445.016)</td>
+<td>2024-07-11 08:15:45.552000000</td>
+<td>17.396124</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>6.477668</td>
+<td>52.711264</td>
+<td>0.860904</td>
+<td>0.796252</td>
+<td>0.941796</td>
+<td>POINT (228691.235 525430.444)</td>
+<td>2024-07-11 08:17:12.977799936</td>
+<td>17.369097</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>6.477668</td>
+<td>52.711379</td>
+<td>0.832822</td>
+<td>0.826474</td>
+<td>0.839913</td>
+<td>POINT (228691.042 525443.202)</td>
+<td>2024-07-11 08:15:49.380413696</td>
+<td>17.397177</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="59bd9f61" class="cell" data-time_run="1:06:54p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>cln_gdf[<span class="st">'geometry'</span>].iloc[<span class="dv">0</span>].x</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="290">
+<pre><code>228690.4240728306</code></pre>
+</div>
+</div>
+<p>I also would like to check if the Dataframe that is created from the sl2 or sl2 file contains the needed columns in the needed datatype. Should I write a function to check that? Should I add the checks within an existing function? Should I use Pydantic?</p>
+<section id="reply-18" class="level5">
+<h5 class="anchored" data-anchor-id="reply-18">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>Good question about validation! You have a few options:</p>
+<ol type="1">
+<li><strong>Separate validation function</strong> - keeps concerns separated, reusable</li>
+<li><strong>Add checks within existing functions</strong> - catches issues early where they matter</li>
+<li><strong>Use Pydantic</strong> - more robust, but adds dependency and complexity</li>
+</ol>
+<p>For your case, I’d suggest starting simple: add basic checks within your existing functions (like <code>sl2gdf</code> or <code>clean_gdf</code>) to verify the required columns exist. Something like:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>required_cols <span class="op">=</span> [<span class="st">'longitude'</span>, <span class="st">'latitude'</span>, <span class="st">'water_depth'</span>, <span class="st">'survey'</span>]</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> <span class="bu">all</span>(col <span class="kw">in</span> df.columns <span class="cf">for</span> col <span class="kw">in</span> required_cols):</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="ss">f"Missing required columns..."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Pydantic would be great if you’re building a larger system with complex validation needs, but might be overkill here.</p>
+<p>Which approach feels right for your use case? Are you expecting the sonar file format to be stable, or do you need robust validation?</p>
+<hr>
+</section>
+</section>
+<section id="slx2gdf" class="level3">
+<h3 class="anchored" data-anchor-id="slx2gdf">slx2gdf</h3>
+<blockquote class="blockquote">
+<pre><code> slx2gdf (sl_filepath:pathlib.Path, to_crs:str='epsg:28992',
+          survey_fltr:str='primary')</code></pre>
+</blockquote>
+<p><em>Convert a sl2 or sl3 file to a GeoDataFrame with the given crs.</em></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sl_filepath</td>
+<td>Path</td>
+<td></td>
+<td>The absolute location of the file to convert</td>
+</tr>
+<tr class="even">
+<td>to_crs</td>
+<td>str</td>
+<td>epsg:28992</td>
+<td>epsg code of crs to transform the coördinates to</td>
+</tr>
+<tr class="odd">
+<td>survey_fltr</td>
+<td>str</td>
+<td>primary</td>
+<td>Filter measurement facts on survey value</td>
+</tr>
+<tr class="even">
+<td><strong>Returns</strong></td>
+<td><strong>geopandas</strong></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div id="46c45be9" class="cell" data-time_run="1:00:02p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>gdf <span class="op">=</span> slx2gdf(sl2_f)</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>gdf.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="263">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">survey</th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">x</th>
+<th data-quarto-table-cell-role="th">y</th>
+<th data-quarto-table-cell-role="th">longitude</th>
+<th data-quarto-table-cell-role="th">latitude</th>
+<th data-quarto-table-cell-role="th">min_range</th>
+<th data-quarto-table-cell-role="th">max_range</th>
+<th data-quarto-table-cell-role="th">water_depth</th>
+<th data-quarto-table-cell-role="th">gps_speed</th>
+<th data-quarto-table-cell-role="th">gps_heading</th>
+<th data-quarto-table-cell-role="th">gps_altitude</th>
+<th data-quarto-table-cell-role="th">bottom_index</th>
+<th data-quarto-table-cell-role="th">frames</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1</th>
+<td>0</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.342999935</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>588</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+<td>POINT (228716.911 525464.863)</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4</th>
+<td>0</td>
+<td>secondary</td>
+<td>2024-07-11 08:13:50.344000101</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>588</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+<td>POINT (228716.911 525464.863)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">7</th>
+<td>0</td>
+<td>downscan</td>
+<td>2024-07-11 08:13:50.404000044</td>
+<td>718714</td>
+<td>6906589</td>
+<td>6.478037</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>2.40792</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>444</td>
+<td>[228, 228, 228, 228, 228, 228, 228, 228, 228, ...</td>
+<td>POINT (228715.693 525464.844)</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">8</th>
+<td>1</td>
+<td>sidescan</td>
+<td>2024-07-11 08:13:50.404999971</td>
+<td>718714</td>
+<td>6906589</td>
+<td>6.478037</td>
+<td>52.71157</td>
+<td>-4.99872</td>
+<td>4.99872</td>
+<td>0.765342</td>
+<td>0.118687</td>
+<td>0.679109</td>
+<td>12.19</td>
+<td>214</td>
+<td>[41, 40, 40, 42, 42, 44, 47, 48, 48, 48, 48, 4...</td>
+<td>POINT (228715.693 525464.844)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">9</th>
+<td>1</td>
+<td>primary</td>
+<td>2024-07-11 08:13:50.385999918</td>
+<td>718716</td>
+<td>6906589</td>
+<td>6.478055</td>
+<td>52.71157</td>
+<td>0.00000</td>
+<td>3.99288</td>
+<td>0.765342</td>
+<td>0.118292</td>
+<td>0.683147</td>
+<td>12.19</td>
+<td>588</td>
+<td>[210, 210, 210, 210, 210, 210, 210, 210, 210, ...</td>
+<td>POINT (228716.911 525464.863)</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="425b120d" class="cell" data-time_run="1:00:02p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>gdf.crs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="265">
+<pre><code>&lt;Projected CRS: EPSG:28992&gt;
+Name: Amersfoort / RD New
+Axis Info [cartesian]:
+- X[east]: Easting (metre)
+- Y[north]: Northing (metre)
+Area of Use:
+- name: Netherlands - onshore, including Waddenzee, Dutch Wadden Islands and 12-mile offshore coastal zone.
+- bounds: (3.2, 50.75, 7.22, 53.7)
+Coordinate Operation:
+- name: RD New
+- method: Oblique Stereographic
+Datum: Amersfoort
+- Ellipsoid: Bessel 1841
+- Prime Meridian: Greenwich</code></pre>
+</div>
+</div>
+<div id="a7e9ba4c" class="cell" data-time_run="1:00:02p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb76"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>gdf[<span class="st">'geometry'</span>].iloc[<span class="dv">0</span>].x</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="267">
+<pre><code>228716.91138899722</code></pre>
+</div>
+</div>
+<p>I want to export a GeoDataframe to different filetypes. See <code>export_gdf</code> function. How do I do that?</p>
+<p>def export_gdf( gdf: gpd.GeoDataFrame, # GeoDataFrame to be saved fn: str, # Filename of the GeoDataFrame without extension folder_out: Path, # Absolute path to folder where files can be saved esri_shp: bool=True, # Save GeoDataFrame to Esri shapefile? csv: bool=True, # Save GeoDataFrame to comma seperated file? geopckg: bool=True, # Save GeoDataFrame to geopackage? )-&gt;None: if esri_shp: pass if csv: pass if geopckg: pass</p>
+<section id="reply-19" class="level5">
+<h5 class="anchored" data-anchor-id="reply-19">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>To export a GeoDataFrame to different file formats, you can use geopandas’ built-in methods. Here’s how to implement each:</p>
+<p><strong>Shapefile:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb78"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>gdf.to_file(folder_out <span class="op">/</span> <span class="st">"filename.shp"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>CSV:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb79"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>gdf.to_csv(folder_out <span class="op">/</span> <span class="st">"filename.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>GeoPackage:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb80"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>gdf.to_file(folder_out <span class="op">/</span> <span class="st">"filename.gpkg"</span>, driver<span class="op">=</span><span class="st">"GPKG"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For the CSV export, you might want to drop the geometry column first (since CSV can’t store geometry) or convert it to WKT format. What would you prefer - include geometry as WKT text, or just export the coordinate columns without the geometry object?</p>
+<p>I don’t want to drop the geometry column completely. I want to keep the x and y coordinates in a x and y column. How do I do that?</p>
+</section>
+<section id="reply-20" class="level5">
+<h5 class="anchored" data-anchor-id="reply-20">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>You can extract the x and y coordinates from the geometry column before exporting to CSV. Here’s how:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb81"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>gdf[<span class="st">'x'</span>] <span class="op">=</span> gdf.geometry.x</span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>gdf[<span class="st">'y'</span>] <span class="op">=</span> gdf.geometry.y</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Then when you export to CSV, you can drop just the geometry column:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb82"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>gdf.drop(columns<span class="op">=</span><span class="st">'geometry'</span>).to_csv(folder_out <span class="op">/</span> <span class="ss">f"</span><span class="sc">{</span>fn<span class="sc">}</span><span class="ss">.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Would you like to add this to your <code>export_gdf</code> function?</p>
+<hr>
+</section>
+</section>
+<section id="export_gdf" class="level3">
+<h3 class="anchored" data-anchor-id="export_gdf">export_gdf</h3>
+<blockquote class="blockquote">
+<pre><code> export_gdf (gdf:geopandas.geodataframe.GeoDataFrame, fn:str,
+             folder_out:pathlib.Path, esri_shp:bool=True, csv:bool=True,
+             geopckg:bool=True)</code></pre>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>gdf</td>
+<td>GeoDataFrame</td>
+<td></td>
+<td>GeoDataFrame to be saved</td>
+</tr>
+<tr class="even">
+<td>fn</td>
+<td>str</td>
+<td></td>
+<td>Filename of the GeoDataFrame without extension</td>
+</tr>
+<tr class="odd">
+<td>folder_out</td>
+<td>Path</td>
+<td></td>
+<td>Absolute path to folder where files can be saved</td>
+</tr>
+<tr class="even">
+<td>esri_shp</td>
+<td>bool</td>
+<td>True</td>
+<td>Save GeoDataFrame to Esri shapefile?</td>
+</tr>
+<tr class="odd">
+<td>csv</td>
+<td>bool</td>
+<td>True</td>
+<td>Save GeoDataFrame to comma seperated file?</td>
+</tr>
+<tr class="even">
+<td>geopckg</td>
+<td>bool</td>
+<td>True</td>
+<td>Save GeoDataFrame to geopackage?</td>
+</tr>
+<tr class="odd">
+<td><strong>Returns</strong></td>
+<td><strong>None</strong></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div id="2eb1850b" class="cell" data-time_run="1:00:04p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb84"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>sl2_f.stem</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="271">
+<pre><code>'2024-07-11_zuiderpark Hoogeveen2_+1075cmnap'</code></pre>
+</div>
+</div>
+<div id="f9e0dff2" class="cell" data-time_run="1:16:27p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb86"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a>export_gdf(cln_gdf, sl2_f.stem, Path(<span class="st">"../test/"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/tmp/ipykernel_906/761674272.py:9: UserWarning: Column names longer than 10 characters will be truncated when saved to ESRI Shapefile.
+  if esri_shp: gdf.to_file(folder_out / f"{fn}.shp")
+/app/data/.local/lib/python3.12/site-packages/pyogrio/raw.py:723: RuntimeWarning: Field datetime create as date field, though DateTime requested.
+  ogr_write(
+/app/data/.local/lib/python3.12/site-packages/pyogrio/raw.py:723: RuntimeWarning: Normalized/laundered field name: 'bottom_height' to 'bottom_hei'
+  ogr_write(</code></pre>
+</div>
+</div>
+<p>Write a function that combines all the functions above. The function should accept a path to a sl2 or sl3 file and a path to store the resulting “shape”, “csv” and “geopackage” files with the properly georeferenced GeoDataframe with the cleaned data and bottom_height column.</p>
+<section id="reply-21" class="level5">
+<h5 class="anchored" data-anchor-id="reply-21">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>Here’s how you can combine all the functions:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb88"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_sonar_file(</span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>    sl_filepath: Path, <span class="co"># Path to sl2 or sl3 file</span></span>
+<span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a>    folder_out: Path, <span class="co"># Output folder for exported files</span></span>
+<span id="cb88-4"><a href="#cb88-4" aria-hidden="true" tabindex="-1"></a>    to_crs: <span class="bu">str</span> <span class="op">=</span> <span class="st">"epsg:28992"</span> <span class="co"># Target CRS</span></span>
+<span id="cb88-5"><a href="#cb88-5" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb88-6"><a href="#cb88-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Process sonar file: extract height, convert to GeoDataFrame, clean, and export"</span></span>
+<span id="cb88-7"><a href="#cb88-7" aria-hidden="true" tabindex="-1"></a>    msrmnt_height <span class="op">=</span> extract_height(sl_filepath)</span>
+<span id="cb88-8"><a href="#cb88-8" aria-hidden="true" tabindex="-1"></a>    gdf <span class="op">=</span> slx2gdf(sl_filepath, to_crs<span class="op">=</span>to_crs)</span>
+<span id="cb88-9"><a href="#cb88-9" aria-hidden="true" tabindex="-1"></a>    gdf_clean <span class="op">=</span> clean_gdf(gdf, msrmnt_height)</span>
+<span id="cb88-10"><a href="#cb88-10" aria-hidden="true" tabindex="-1"></a>    export_gdf(gdf_clean, sl_filepath.stem, folder_out)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This chains together: extracting the height from the filename, converting to GeoDataFrame, cleaning the data, and exporting to all three formats.</p>
+<p>Does this capture what you need?</p>
+<hr>
+</section>
+</section>
+<section id="process_sonar_file" class="level3">
+<h3 class="anchored" data-anchor-id="process_sonar_file">process_sonar_file</h3>
+<blockquote class="blockquote">
+<pre><code> process_sonar_file (sl_filepath:pathlib.Path, folder_out:pathlib.Path,
+                     to_crs:str='epsg:28992')</code></pre>
+</blockquote>
+<p><em>Process sonar file: extract height, convert to GeoDataFrame, clean, and export</em></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sl_filepath</td>
+<td>Path</td>
+<td></td>
+<td>Path to sl2 or sl3 file</td>
+</tr>
+<tr class="even">
+<td>folder_out</td>
+<td>Path</td>
+<td></td>
+<td>Output folder for exported files</td>
+</tr>
+<tr class="odd">
+<td>to_crs</td>
+<td>str</td>
+<td>epsg:28992</td>
+<td>Target CRS</td>
+</tr>
+<tr class="even">
+<td><strong>Returns</strong></td>
+<td><strong>None</strong></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div id="06113e52" class="cell" data-time_run="1:07:57p">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb90"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>process_sonar_file(sl2_f, Path(<span class="st">"../test"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/tmp/ipykernel_906/761674272.py:9: UserWarning: Column names longer than 10 characters will be truncated when saved to ESRI Shapefile.
+  if esri_shp: gdf.to_file(folder_out / f"{fn}.shp")
+/app/data/.local/lib/python3.12/site-packages/pyogrio/raw.py:723: RuntimeWarning: Field datetime create as date field, though DateTime requested.
+  ogr_write(
+/app/data/.local/lib/python3.12/site-packages/pyogrio/raw.py:723: RuntimeWarning: Normalized/laundered field name: 'bottom_height' to 'bottom_hei'
+  ogr_write(</code></pre>
+</div>
+</div>
+<p>Can you explain what the difference is “under the hood” between <code>gdf.loc[:, 'y'] =</code> and just <code>gdf['y'] =</code>?</p>
+<section id="reply-22" class="level5">
+<h5 class="anchored" data-anchor-id="reply-22">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>Great question! Here’s what’s happening under the hood:</p>
+<p><strong><code>gdf['y'] = ...</code></strong> (chained indexing) - Pandas first evaluates <code>gdf['y']</code>, which <em>might</em> return a view or a copy (pandas can’t always tell) - Then it tries to assign to that result - Because pandas isn’t sure if you’re modifying the original or a copy, it warns you</p>
+<p><strong><code>gdf.loc[:, 'y'] = ...</code></strong> (explicit indexing) - This is a single operation that tells pandas: “I want to modify the original DataFrame at all rows (<code>:</code>) and column <code>'y'</code>” - Pandas knows you intend to modify the original, so no ambiguity, no warning</p>
+<p>The <code>.loc[]</code> approach is more explicit about your intent to modify the DataFrame in place, which helps pandas optimize the operation and avoid unnecessary copies.</p>
+<p>Does that clarify the difference?</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/Hopsakee\.github\.io\/sonar2csv_shape");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Hopsakee/sonar2csv_shape/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
