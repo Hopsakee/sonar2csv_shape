@@ -7,6 +7,8 @@ __all__ = ['read_sl', 'extract_height', 'clean_gdf', 'slx2gdf', 'export_gdf', 'p
 
 # %% ../nbs/00_core.ipynb 5
 import geopandas as gpd
+import pandas as pd
+import re
 from pathlib import Path
 from sonarlight import Sonar
 
