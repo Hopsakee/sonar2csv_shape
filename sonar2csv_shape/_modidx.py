@@ -2,7 +2,15 @@
 
 d = { 'settings': { 'branch': 'main',
                 'doc_baseurl': '/sonar2csv_shape',
-                'doc_host': 'https://jelledejong@wdodelta.nl.github.io',
-                'git_url': 'https://github.com/jelledejong@wdodelta.nl/sonar2csv_shape',
+                'doc_host': 'https://Hopsakee.github.io',
+                'git_url': 'https://github.com/Hopsakee/sonar2csv_shape',
                 'lib_path': 'sonar2csv_shape'},
-  'syms': {'sonar2csv_shape.core': {'sonar2csv_shape.core.foo': ('core.html#foo', 'sonar2csv_shape/core.py')}}}
+  'syms': { 'sonar2csv_shape.cline': {'sonar2csv_shape.cline.main': ('convert.html#main', 'sonar2csv_shape/cline.py')},
+            'sonar2csv_shape.convert': {'sonar2csv_shape.convert.main': ('convert.html#main', 'sonar2csv_shape/convert.py')},
+            'sonar2csv_shape.core': { 'sonar2csv_shape.core.clean_gdf': ('core.html#clean_gdf', 'sonar2csv_shape/core.py'),
+                                      'sonar2csv_shape.core.export_gdf': ('core.html#export_gdf', 'sonar2csv_shape/core.py'),
+                                      'sonar2csv_shape.core.extract_height': ('core.html#extract_height', 'sonar2csv_shape/core.py'),
+                                      'sonar2csv_shape.core.process_sonar_file': ( 'core.html#process_sonar_file',
+                                                                                   'sonar2csv_shape/core.py'),
+                                      'sonar2csv_shape.core.read_sl': ('core.html#read_sl', 'sonar2csv_shape/core.py'),
+                                      'sonar2csv_shape.core.slx2gdf': ('core.html#slx2gdf', 'sonar2csv_shape/core.py')}}}

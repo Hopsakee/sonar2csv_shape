@@ -5,17 +5,6 @@
 # %% auto 0
 __all__ = ['main']
 
-# %% ../nbs/01_convert.ipynb 1
-#| export
-#| default_exp convert
-
-# %% ../nbs/01_convert.ipynb 2
-from nbdev.showdoc import *
-
-# %% ../nbs/01_convert.ipynb 4
-import argparse
-from .core import *
-
 # %% ../nbs/01_convert.ipynb 7
 def main():
     parser = argparse.ArgumentParser(description="Convert sonar files (sl2/sl3) to CSV and shapefile")
@@ -24,10 +13,3 @@ def main():
     parser.add_argument('--crs', default='epsg:28992', help="Target CRS (default: epsg:28992)")
     args = parser.parse_args()
     process_sonar_file(args.input, args.output, args.crs)
-
-# %% ../nbs/01_convert.ipynb 9
-if __name__ == "__main__":
-    main()
-
-# %% ../nbs/01_convert.ipynb 10
-import nbdev; nbdev.nbdev_export()

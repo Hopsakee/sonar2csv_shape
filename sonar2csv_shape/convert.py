@@ -13,6 +13,7 @@ __all__ = ['main']
 from nbdev.showdoc import *
 
 # %% ../nbs/01_convert.ipynb 4
+from pathlib import Path
 import argparse
 from .core import *
 
