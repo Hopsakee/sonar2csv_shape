@@ -19,24 +19,31 @@ def read_sl(
 # %% ../nbs/00_core.ipynb 30
 def extract_height(
     sl_filepath: Path, # The absolute location of the file to convert
-    re_ptrn: str=r"[+-]\d+(?=cmnap)"
+    re_ptrn: str=r"[+-]?\d+(?=cmnap)"
     )->int: # The height of the measurement station in cm above NAP
     "Extract height from the filename in cmNAP"
     if 'cmnap' not in str(sl_filepath).lower():
         raise ValueError("The filename must contain the height of the Sonar boot at time of measurement in 'cmNAP' at the end of the filename (e.g. 'example_description_+1050cmNAP.sl2')")
     return int(re.search(re_ptrn, str(sl_filepath), flags=re.IGNORECASE)[0])
 
-# %% ../nbs/00_core.ipynb 51
+# %% ../nbs/00_core.ipynb 63
 def clean_gdf(
     gdf: gpd.GeoDataFrame, # GeoDataFrame from sl2gdf
     msrmnt_height: int, # Height of measurement instrument in cm above NAP
     ) -> gpd.GeoDataFrame: # Cleaned GeoDataFrame with bottom_height column
     "Filter primary survey data, remove duplicates, and calculate bottom height in mNAP"
-    return (gdf[gdf["survey"]=="primary"]
-            .drop_duplicates(subset=['longitude', 'latitude', 'water_depth'])
-            .assign(bottom_height=lambda x: msrmnt_height / 100 - x['water_depth']))
+    df_cln = (gdf[gdf["survey"]=="primary"]
+            .groupby(['longitude', 'latitude'], as_index=False).agg(
+                mean_depth=pd.NamedAgg(column="water_depth", aggfunc="mean"),
+                min_depth=pd.NamedAgg(column="water_depth", aggfunc="min"),
+                max_depth=pd.NamedAgg(column="water_depth", aggfunc="max"),
+                geometry=pd.NamedAgg(column="geometry", aggfunc="first"),
+                datetime=pd.NamedAgg(column="datetime", aggfunc="mean")
+            )
+            .assign(bottom_height=lambda x: msrmnt_height / 100 - x['mean_depth']))
+    return gpd.GeoDataFrame(df_cln, geometry='geometry', crs=gdf.crs)
 
-# %% ../nbs/00_core.ipynb 54
+# %% ../nbs/00_core.ipynb 69
 def slx2gdf(
     sl_filepath: Path, # The absolute location of the file to convert
     to_crs: str = "epsg:28992", # epsg code of crs to transform the coördinates to
@@ -52,7 +59,7 @@ def slx2gdf(
     gdf = gdf.set_crs(epsg=4326)
     return gdf.to_crs(to_crs)
 
-# %% ../nbs/00_core.ipynb 59
+# %% ../nbs/00_core.ipynb 75
 def export_gdf(
     gdf: gpd.GeoDataFrame, # GeoDataFrame to be saved
     fn: str, # Filename of the GeoDataFrame without extension
@@ -69,7 +76,7 @@ def export_gdf(
         df = gdf.drop(columns=['geometry'])
         df.to_csv(folder_out / f"{fn}.csv", index=False)
 
-# %% ../nbs/00_core.ipynb 63
+# %% ../nbs/00_core.ipynb 79
 def process_sonar_file(
     sl_filepath: Path, # Path to sl2 or sl3 file
     folder_out: Path, # Output folder for exported files
