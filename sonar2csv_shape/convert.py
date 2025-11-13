@@ -7,6 +7,7 @@ __all__ = ['main']
 
 # %% ../nbs/01_convert.ipynb 4
 import argparse
+from pathlib import Path
 from .core import *
 
 # %% ../nbs/01_convert.ipynb 7
