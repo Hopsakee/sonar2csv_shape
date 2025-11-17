@@ -13,4 +13,5 @@ d = { 'settings': { 'branch': 'main',
                                       'sonar2csv_shape.core.process_sonar_file': ( 'core.html#process_sonar_file',
                                                                                    'sonar2csv_shape/core.py'),
                                       'sonar2csv_shape.core.read_sl': ('core.html#read_sl', 'sonar2csv_shape/core.py'),
-                                      'sonar2csv_shape.core.slx2gdf': ('core.html#slx2gdf', 'sonar2csv_shape/core.py')}}}
+                                      'sonar2csv_shape.core.slx2gdf': ('core.html#slx2gdf', 'sonar2csv_shape/core.py')},
+            'sonar2csv_shape.web': {}}}
