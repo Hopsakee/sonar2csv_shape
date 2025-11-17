@@ -1,0 +1,7 @@
+website:
+  sidebar:
+    contents:
+      - index.ipynb
+      - 00_convert.ipynb
+      - 01_cmdline.ipynb
+      - 02_web.ipynb

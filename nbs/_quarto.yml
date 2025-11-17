@@ -7,10 +7,11 @@ format:
     css: styles.css
     toc: true
     keep-md: true
+    mainfont: "Vivala Sans Round"
   commonmark: default
 
 website:
-  twitter-card: true
+  twitter-card: false
   open-graph: true
   repo-actions: [issue]
   navbar:

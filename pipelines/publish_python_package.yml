@@ -1,51 +1,51 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# # Starter pipeline
+# # Start with a minimal pipeline that you can customize to build and deploy your code.
+# # Add steps that build, run tests, deploy, and more:
+# # https://aka.ms/yaml
 
-trigger:
-  branches:
-    include:
-    - develop
-    - main
-  paths:
-    include:
-    - src/*
-    - __VERSION__.py
-    - /*.toml
-    - uv.lock
+# trigger:
+#   branches:
+#     include:
+#     - develop
+#     - main
+#   paths:
+#     include:
+#     - src/*
+#     - __VERSION__.py
+#     - /*.toml
+#     - uv.lock
 
-variables:
-  ${{ if eq(variables['Build.SourceBranchName'], 'main') }}: 
-    feed: WDOD-Modules
-  ${{ if eq(variables['Build.SourceBranchName'], 'develop') }}: 
-    feed: WDOD-Dev-Modules
+# variables:
+#   ${{ if eq(variables['Build.SourceBranchName'], 'main') }}: 
+#     feed: WDOD-Modules
+#   ${{ if eq(variables['Build.SourceBranchName'], 'develop') }}: 
+#     feed: WDOD-Dev-Modules
 
-pool:
-  vmImage: ubuntu-latest
+# pool:
+#   vmImage: ubuntu-latest
 
-steps:
+# steps:
 
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.x'
-    addToPath: true
-    architecture: 'x64'
-  displayName: 'Use Python 3.x'
+# - task: UsePythonVersion@0
+#   inputs:
+#     versionSpec: '3.x'
+#     addToPath: true
+#     architecture: 'x64'
+#   displayName: 'Use Python 3.x'
 
-- script: |
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    pip install twine
-  displayName: 'Install uv and twine'
+# - script: |
+#     curl -LsSf https://astral.sh/uv/install.sh | sh
+#     pip install twine
+#   displayName: 'Install uv and twine'
 
-- script: uv build --config-settings build_loc=${{variables.feed}}
-  displayName: 'Python build'
+# - script: uv build --config-settings build_loc=${{variables.feed}}
+#   displayName: 'Python build'
 
-- task: TwineAuthenticate@1
-  inputs:
-    artifactFeed: 'Datalab Modules/${{variables.feed}}'   
-  displayName: 'Twine Authenticate'
+# - task: TwineAuthenticate@1
+#   inputs:
+#     artifactFeed: 'Datalab Modules/${{variables.feed}}'   
+#   displayName: 'Twine Authenticate'
 
-- script: |
-    python -m twine upload -r ${{variables.feed}} --config-file $(PYPIRC_PATH) dist/*.whl
-  displayName: 'Upload to feed'
+# - script: |
+#     python -m twine upload -r ${{variables.feed}} --config-file $(PYPIRC_PATH) dist/*.whl
+#   displayName: 'Upload to feed'

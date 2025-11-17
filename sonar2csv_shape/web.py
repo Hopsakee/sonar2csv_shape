@@ -7,9 +7,10 @@ __all__ = []
 
 # %% ../nbs/02_web.ipynb 2
 #| export
+#| default_exp web#| export
 #| default_exp web
 
-# %% ../nbs/02_web.ipynb 5
+# %% ../nbs/02_web.ipynb 6
 from fastcore.utils import *
 from fasthtml.common import *
 from fasthtml.jupyter import *
@@ -18,4 +19,4 @@ import fasthtml.components as fh
 import httpx
 from pathlib import Path
 
-from .core import *
+from .convert import *
