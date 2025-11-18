@@ -5,12 +5,12 @@
 # %% auto 0
 __all__ = ['main']
 
-# %% ../nbs/01_cmdline.ipynb 5
+# %% ../nbs/01_cmdline.ipynb 3
 import argparse
 from pathlib import Path
 from .convert import *
 
-# %% ../nbs/01_cmdline.ipynb 8
+# %% ../nbs/01_cmdline.ipynb 6
 def main():
     parser = argparse.ArgumentParser(description="Convert sonar files (sl2/sl3) to CSV and shapefile")
     parser.add_argument('input', type=Path, help="Path to sl2 or sl3 file")

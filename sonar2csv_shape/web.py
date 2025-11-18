@@ -7,7 +7,6 @@ __all__ = []
 
 # %% ../nbs/02_web.ipynb 2
 #| export
-#| default_exp web#| export
 #| default_exp web
 
 # %% ../nbs/02_web.ipynb 6

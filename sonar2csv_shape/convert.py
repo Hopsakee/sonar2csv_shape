@@ -28,7 +28,7 @@ def extract_height(
         raise ValueError("The filename must contain the height of the Sonar boot at time of measurement in 'cmNAP' at the end of the filename (e.g. 'example_description_+1050cmNAP.sl2')")
     return int(re.search(re_ptrn, str(sl_filepath), flags=re.IGNORECASE)[0])
 
-# %% ../nbs/00_convert.ipynb 60
+# %% ../nbs/00_convert.ipynb 58
 def clean_gdf(
     gdf: gpd.GeoDataFrame, # GeoDataFrame from sl2gdf
     msrmnt_height: int, # Height of measurement instrument in cm above NAP
@@ -45,7 +45,7 @@ def clean_gdf(
             .assign(bottom_height=lambda x: msrmnt_height / 100 - x['mean_depth']))
     return gpd.GeoDataFrame(df_cln, geometry='geometry', crs=gdf.crs)
 
-# %% ../nbs/00_convert.ipynb 66
+# %% ../nbs/00_convert.ipynb 64
 def slx2gdf(
     sl_filepath: Path, # The absolute location of the file to convert
     to_crs: str = "epsg:28992", # epsg code of crs to transform the coördinates to
@@ -61,7 +61,7 @@ def slx2gdf(
     gdf = gdf.set_crs(epsg=4326)
     return gdf.to_crs(to_crs)
 
-# %% ../nbs/00_convert.ipynb 72
+# %% ../nbs/00_convert.ipynb 69
 def export_gdf(
     gdf: gpd.GeoDataFrame, # GeoDataFrame to be saved
     fn: str, # Filename of the GeoDataFrame without extension
@@ -80,7 +80,7 @@ def export_gdf(
         df.to_csv(folder_out / f"{fn}.csv", index=False)
     return
 
-# %% ../nbs/00_convert.ipynb 76
+# %% ../nbs/00_convert.ipynb 72
 def process_sonar_file(
     sl_filepath: Path, # Path to sl2 or sl3 file
     folder_out: Path, # Output folder for exported files
