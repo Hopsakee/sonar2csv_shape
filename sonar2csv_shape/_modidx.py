@@ -14,4 +14,5 @@ d = { 'settings': { 'branch': 'main',
                                                                                          'sonar2csv_shape/convert.py'),
                                          'sonar2csv_shape.convert.read_sl': ('convert.html#read_sl', 'sonar2csv_shape/convert.py'),
                                          'sonar2csv_shape.convert.slx2gdf': ('convert.html#slx2gdf', 'sonar2csv_shape/convert.py')},
-            'sonar2csv_shape.web': {}}}
+            'sonar2csv_shape.web': {},
+            'sonar2csv_shape.webgui': {}}}
