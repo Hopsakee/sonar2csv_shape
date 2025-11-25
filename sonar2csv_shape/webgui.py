@@ -17,7 +17,7 @@ from pathlib import Path
 
 from .convert import *
 
-# %% ../nbs/02_webgui.ipynb 8
+# %% ../nbs/02_webgui.ipynb 9
 theme_css = """
 [data-theme="WDODelta"] {
   --color-base-100: oklch(100% 0 0);
@@ -47,7 +47,7 @@ theme_css = """
 }
 """
 
-# %% ../nbs/02_webgui.ipynb 9
+# %% ../nbs/02_webgui.ipynb 10
 daisy_hdrs = (
     Link(href='https://cdn.jsdelivr.net/npm/daisyui@5', rel='stylesheet', type='text/css'),
     Script(src='https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4'),
@@ -55,26 +55,33 @@ daisy_hdrs = (
     Style(theme_css),
 )
 
-# %% ../nbs/02_webgui.ipynb 10
+# %% ../nbs/02_webgui.ipynb 11
 app = FastHTML(hdrs=daisy_hdrs, htmlkw={'data-theme': 'WDODelta'})
 rt = app.route
 
-# %% ../nbs/02_webgui.ipynb 14
+# %% ../nbs/02_webgui.ipynb 15
 srv = JupyUvi(app=app)
 
-# %% ../nbs/02_webgui.ipynb 31
+# %% ../nbs/02_webgui.ipynb 33
 @rt
 def sonarhome():
-    return Titled("Sonar File Converter",
-        Article(
-            Form(hx_post=upload, hx_target="#result")(
-                Input(type="file", name="file", cls="file-input file-input-bordered"),
-                Button("Upload and Convert", type="submit", cls='btn btn-primary'),
-            ),
-            Div(id="result")
+    return Div(
+        Title("Sonar File Converter"),
+        Div(cls="min-h-screen bg-cover bg-center",
+            style="background-image: url('https://cuatro.sim-cdn.nl/wdodelta/uploads/styles/large_5x2_2560x1024/media/foto_-_stuw_en_duiker_bij_lambert_van_der_linde_albertzoon_weg_3_0.jpg?h=e600bad3&cb=Y-KMqDmb')"
+            )(H1("Sonar File Converter", cls="text-4xl font-bold text-center p-8"),
+            Article(cls="flex flex-col items-center justify-center ")(
+                Form(hx_post=upload, hx_target="#result", cls="flex gap-2")(
+                    Input(type="file", name="file", cls="file-input file-input-bordered"),
+                    Button("Upload and Convert", type="submit", cls='btn btn-primary'),
+                ),
+                Div(id="result")
+            )
         )
     )
 
+
+# %% ../nbs/02_webgui.ipynb 34
 @rt
 async def upload(file: UploadFile):
     upload_dir = Path("/app/data")
