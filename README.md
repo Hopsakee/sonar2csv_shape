@@ -17,11 +17,17 @@ started.
 # make sure sonar2csv_shape package is installed in development mode
 $ pip install -e .
 
+or use `uv`
+$ uv add --editable --dev sonar2csv_shape
+
 # make changes under nbs/ directory
 # ...
 
 # compile to have changes apply to sonar2csv_shape
 $ nbdev_prepare
+
+or if you have installed `nbdev` in the project with `uv`
+$ uv run nbdev_prepare
 ```
 
 ## Usage
@@ -35,17 +41,12 @@ Install latest from the GitHub
 $ pip install git+https://github.com/jelledejong@wdodelta.nl/sonar2csv_shape.git
 ```
 
-or from
-[conda](https://anaconda.org/jelledejong@wdodelta.nl/sonar2csv_shape)
+or from the WDODelta Azure Devops
+[repository](git@ssh.dev.azure.com:v3/wdodelta/Datalab/sonar2csv_shape)
+if you have acces:
 
 ``` sh
-$ conda install -c jelledejong@wdodelta.nl sonar2csv_shape
-```
-
-or from [pypi](https://pypi.org/project/sonar2csv_shape/)
-
-``` sh
-$ pip install sonar2csv_shape
+$ git clone git@ssh.dev.azure.com:v3/wdodelta/Datalab/sonar2csv_shape
 ```
 
 ### Documentation
@@ -53,14 +54,77 @@ $ pip install sonar2csv_shape
 Documentation can be found hosted on this GitHub
 [repository](https://github.com/jelledejong@wdodelta.nl/sonar2csv_shape)’s
 [pages](https://jelledejong@wdodelta.nl.github.io/sonar2csv_shape/).
-Additionally you can find package manager specific guidelines on
-[conda](https://anaconda.org/jelledejong@wdodelta.nl/sonar2csv_shape)
-and [pypi](https://pypi.org/project/sonar2csv_shape/) respectively.
 
 ## How to use
 
-Fill me in please! Don’t forget code examples:
+There are three ways to use `sonar2csv_shape` to convert your `.sl2` or
+`.sl3` sonar files to CSV and shapefiles:
 
-``` python
-1+1
+### 1. Command Line Interface (CLI)
+
+After installation with `uv sync`, you can use the CLI tool:
+
+``` bash
+uv run sonar2csv_shape input_file.sl2 output_folder/
 ```
+
+**Example:**
+
+``` bash
+uv run sonar2csv_shape "measurements_+765cmNAP.sl3" ./converted_data/
+```
+
+You can also specify a custom coordinate reference system (CRS):
+
+``` bash
+uv run sonar2csv_shape input_file.sl2 output_folder/ --crs epsg:4326
+```
+
+**Important:** The filename must contain the height of the sonar
+instrument at the time of measurement in `cmNAP` format (e.g.,
+`+765cmNAP` or `-1050cmNAP`). This is used to calculate the bottom
+height in mNAP.
+
+### 2. Using the Jupyter Notebook
+
+For interactive conversion and exploration, you can use the
+`00_convert.ipynb` notebook:
+
+1.  Open the notebook in Jupyter
+2.  Load your sonar file and process it step by step
+3.  Customize the conversion parameters as needed
+
+This method is ideal for: - Exploring the data before conversion -
+Testing different parameters - Understanding the conversion process -
+Batch processing multiple files with custom logic
+
+### 3. Web Interface
+
+You can spin up a web server to provide conversion capabilities to
+multiple users:
+
+``` bash
+uv run sonar2csv_webgui
+```
+
+This starts a web interface at `http://localhost:5001` where users
+can: - Upload `.sl2` or `.sl3` files through their browser -
+Automatically convert files to CSV, shapefile, and GeoPackage formats -
+Download the results as a ZIP file
+
+**Note:** The web interface is primarily designed for server deployments
+where multiple users need access to the conversion tool. For local PC
+usage, the CLI or notebook methods are more straightforward.
+
+### Output Files
+
+All conversion methods produce the following output files: -
+**Shapefile** (`.shp`, `.shx`, `.dbf`, `.prj`, `.cpg`) - for use in GIS
+software like QGIS or ArcGIS - **CSV file** (`.csv`) - tabular data with
+coordinates and measurements - **GeoPackage** (`.gpkg`) - modern
+geospatial format
+
+The converted data includes: - Coordinates in the specified CRS
+(default: RD New / Amersfoort - EPSG:28992) - Mean, minimum, and maximum
+water depth - Bottom height in mNAP (calculated from measurement height
+and water depth) - Timestamp of measurements
