@@ -16,6 +16,7 @@ dependencies = [
 
 [project.scripts]
 sonar2csv_shape = "sonar2csv_shape:main"
+sonar2csv_webgui = "sonar2csv_shape:webgui_main"
 
 [build-system]
 requires = ["hatchling"]
