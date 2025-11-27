@@ -87,7 +87,7 @@ def process_sonar_file(
     to_crs: str = "epsg:28992" # Target CRS
     ) -> None:
     "Process sonar file: extract height, convert to GeoDataFrame, clean, and export"
-    msrmnt_height = extract_height(sl_filepath)
+    msrmnt_height = extract_height(str(sl_filepath.stem))
     gdf = slx2gdf(sl_filepath, to_crs=to_crs)
     gdf_clean = clean_gdf(gdf, msrmnt_height)
     export_gdf(gdf_clean, sl_filepath.stem, folder_out)

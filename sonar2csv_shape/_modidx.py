@@ -16,5 +16,6 @@ d = { 'settings': { 'branch': 'main',
                                          'sonar2csv_shape.convert.slx2gdf': ('convert.html#slx2gdf', 'sonar2csv_shape/convert.py')},
             'sonar2csv_shape.web': {},
             'sonar2csv_shape.webgui': { 'sonar2csv_shape.webgui.cleanup': ('webgui.html#cleanup', 'sonar2csv_shape/webgui.py'),
+                                        'sonar2csv_shape.webgui.get_file': ('webgui.html#get_file', 'sonar2csv_shape/webgui.py'),
                                         'sonar2csv_shape.webgui.sonarhome': ('webgui.html#sonarhome', 'sonar2csv_shape/webgui.py'),
                                         'sonar2csv_shape.webgui.upload': ('webgui.html#upload', 'sonar2csv_shape/webgui.py')}}}
