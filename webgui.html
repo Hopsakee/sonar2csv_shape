@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Module making it possible to run the conversion from slX-files from a web interface">
+
+<title>Web interface – sonar2csv_shape</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-60046beead0f13eb161ed302c8ce70d4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="Web interface – sonar2csv_shape">
+<meta property="og:description" content="Module making it possible to run the conversion from slX-files from a web interface">
+<meta property="og:site_name" content="sonar2csv_shape">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">sonar2csv_shape</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./webgui.html">Web interface</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">sonar2csv_shape</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./convert.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Conversion logic</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cmdline.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Command line</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./webgui.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Web interface</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#imports-and-setting-up-of-module" id="toc-imports-and-setting-up-of-module" class="nav-link active" data-scroll-target="#imports-and-setting-up-of-module">Imports and setting up of module</a></li>
+  <li><a href="#setting-styling-of-web-gui" id="toc-setting-styling-of-web-gui" class="nav-link" data-scroll-target="#setting-styling-of-web-gui">Setting styling of web gui</a></li>
+  <li><a href="#create-upload" id="toc-create-upload" class="nav-link" data-scroll-target="#create-upload">Create upload</a>
+  <ul class="collapse">
+  <li><a href="#expanation-of-fasthtml-fasttag-titled" id="toc-expanation-of-fasthtml-fasttag-titled" class="nav-link" data-scroll-target="#expanation-of-fasthtml-fasttag-titled">Expanation of FastHTML fasttag <code>Titled()</code></a></li>
+  <li><a href="#the-difference-between-titled-and-title-ft-components-from-fasthtml-are" id="toc-the-difference-between-titled-and-title-ft-components-from-fasthtml-are" class="nav-link" data-scroll-target="#the-difference-between-titled-and-title-ft-components-from-fasthtml-are">The difference between <code>Titled()</code> and <code>Title()</code> ft-components from <code>FastHTML</code> are:</a></li>
+  </ul></li>
+  <li><a href="#create-download" id="toc-create-download" class="nav-link" data-scroll-target="#create-download">Create download</a></li>
+  <li><a href="#fasthtml-best-practices" id="toc-fasthtml-best-practices" class="nav-link" data-scroll-target="#fasthtml-best-practices">FastHTML Best Practices</a>
+  <ul class="collapse">
+  <li><a href="#database-table-creation" id="toc-database-table-creation" class="nav-link" data-scroll-target="#database-table-creation">Database Table Creation</a></li>
+  <li><a href="#route-naming-conventions" id="toc-route-naming-conventions" class="nav-link" data-scroll-target="#route-naming-conventions">Route Naming Conventions</a></li>
+  <li><a href="#query-parameters-over-path-parameters" id="toc-query-parameters-over-path-parameters" class="nav-link" data-scroll-target="#query-parameters-over-path-parameters">Query Parameters over Path Parameters</a></li>
+  <li><a href="#leverage-return-values" id="toc-leverage-return-values" class="nav-link" data-scroll-target="#leverage-return-values">Leverage Return Values</a></li>
+  <li><a href="#use-.to-for-url-generation" id="toc-use-.to-for-url-generation" class="nav-link" data-scroll-target="#use-.to-for-url-generation">Use <code>.to()</code> for URL Generation</a></li>
+  <li><a href="#picocss-comes-free" id="toc-picocss-comes-free" class="nav-link" data-scroll-target="#picocss-comes-free">PicoCSS comes free</a></li>
+  <li><a href="#smart-defaults" id="toc-smart-defaults" class="nav-link" data-scroll-target="#smart-defaults">Smart Defaults</a></li>
+  <li><a href="#fasthtml-handles-iterables" id="toc-fasthtml-handles-iterables" class="nav-link" data-scroll-target="#fasthtml-handles-iterables">FastHTML Handles Iterables</a></li>
+  <li><a href="#functional-patterns" id="toc-functional-patterns" class="nav-link" data-scroll-target="#functional-patterns">Functional Patterns</a></li>
+  <li><a href="#minimal-code" id="toc-minimal-code" class="nav-link" data-scroll-target="#minimal-code">Minimal Code</a></li>
+  <li><a href="#use-post-for-all-mutations" id="toc-use-post-for-all-mutations" class="nav-link" data-scroll-target="#use-post-for-all-mutations">Use POST for All Mutations</a></li>
+  <li><a href="#modern-htmx-event-syntax" id="toc-modern-htmx-event-syntax" class="nav-link" data-scroll-target="#modern-htmx-event-syntax">Modern HTMX Event Syntax</a></li>
+  <li><a href="#web-application-upload-convert-and-download" id="toc-web-application-upload-convert-and-download" class="nav-link" data-scroll-target="#web-application-upload-convert-and-download">Web application upload, convert and download</a>
+  <ul class="collapse">
+  <li><a href="#sonarhome-documentation" id="toc-sonarhome-documentation" class="nav-link" data-scroll-target="#sonarhome-documentation"><code>sonarhome()</code> Documentation</a></li>
+  <li><a href="#sonarhome" id="toc-sonarhome" class="nav-link" data-scroll-target="#sonarhome">sonarhome</a></li>
+  <li><a href="#upload-documentation" id="toc-upload-documentation" class="nav-link" data-scroll-target="#upload-documentation"><code>upload()</code> Documentation</a></li>
+  <li><a href="#upload" id="toc-upload" class="nav-link" data-scroll-target="#upload">upload</a></li>
+  <li><a href="#get_file-documentation" id="toc-get_file-documentation" class="nav-link" data-scroll-target="#get_file-documentation"><code>get_file()</code> Documentation</a></li>
+  <li><a href="#get_file" id="toc-get_file" class="nav-link" data-scroll-target="#get_file">get_file</a></li>
+  <li><a href="#cleanup-documentation" id="toc-cleanup-documentation" class="nav-link" data-scroll-target="#cleanup-documentation"><code>cleanup()</code> Documentation</a></li>
+  <li><a href="#cleanup" id="toc-cleanup" class="nav-link" data-scroll-target="#cleanup">cleanup</a></li>
+  </ul></li>
+  <li><a href="#adding-option-to-start-the-webserver-locally-with-serve" id="toc-adding-option-to-start-the-webserver-locally-with-serve" class="nav-link" data-scroll-target="#adding-option-to-start-the-webserver-locally-with-serve">Adding option to start the webserver locally with <code>serve()</code></a>
+  <ul class="collapse">
+  <li><a href="#main" id="toc-main" class="nav-link" data-scroll-target="#main">main</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/Hopsakee/sonar2csv_shape/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="webgui.html.md"><i class="bi bi-file-code"></i>CommonMark</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Web interface</h1>
+</div>
+
+<div>
+  <div class="description">
+    Module making it possible to run the conversion from slX-files from a web interface
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="imports-and-setting-up-of-module" class="level2">
+<h2 class="anchored" data-anchor-id="imports-and-setting-up-of-module">Imports and setting up of module</h2>
+</section>
+<section id="setting-styling-of-web-gui" class="level2">
+<h2 class="anchored" data-anchor-id="setting-styling-of-web-gui">Setting styling of web gui</h2>
+<p>When building the styling of the web application use the DaisyUI documentation from https://daisyui.com/llms.txt.</p>
+<p>I want to apply a custom style using the color schemes of WDODelta.</p>
+<p><strong>Setting Up Custom DaisyUI Themes in FastHTML:</strong></p>
+<ol type="1">
+<li><p><strong>Define your custom theme CSS</strong> as a string with CSS variables wrapped in a <code>[data-theme="YourThemeName"]</code> selector</p></li>
+<li><p><strong>Include the required headers:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>daisy_hdrs <span class="op">=</span> (</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    Link(rel<span class="op">=</span><span class="st">"stylesheet"</span>, href<span class="op">=</span><span class="st">"https://cdn.jsdelivr.net/npm/daisyui@5"</span>, <span class="bu">type</span><span class="op">=</span><span class="st">'text/css'</span>),</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    Script(src<span class="op">=</span><span class="st">"https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    Link(href<span class="op">=</span><span class="st">"https://cdn.jsdelivr.net/npm/daisyui@5/themes.css"</span>, rel<span class="op">=</span><span class="st">'stylesheet'</span>, <span class="bu">type</span><span class="op">=</span><span class="st">'text/css'</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    Style(theme_css)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p><strong>Apply your theme globally</strong> using <code>htmlkw</code> when creating your FastHTML app:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> FastHTML(hdrs<span class="op">=</span>daisy_hdrs, htmlkw<span class="op">=</span>{<span class="st">'data-theme'</span>: <span class="st">'WDODelta'</span>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+</ol>
+<p><strong>Key points:</strong> - Use <code>htmlkw</code> (not <code>bodykw</code>) to set <code>data-theme</code> on the <code>&lt;html&gt;</code> tag - this is where DaisyUI expects it - The main daisyUI CSS (<code>https://cdn.jsdelivr.net/npm/daisyui@5</code>) provides component styles - The separate <code>themes.css</code> file provides access to all built-in DaisyUI themes - Your custom <code>theme_css</code> in a <code>Style()</code> tag defines your custom theme variables - Don’t use <code>/dist/full.min.css</code> - it doesn’t work with daisyUI 5</p>
+<p>WDODelta color theme I created with <a href="https://daisyui.com/theme-generator/">daisyUI Theme Generator</a>.</p>
+<div id="e3a059a1" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_preview(app):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Function to easily view part of the app in Jupyter Notebook or SolveIt"</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> partial(HTMX, app<span class="op">=</span>app, host<span class="op">=</span><span class="va">None</span>, port<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="e2336af2" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> get_preview(app)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<hr>
+<p>🤔 <em>Can you please explain to me what the partial function does, how it does that and what its purpose is?</em></p>
+<p>🤖Reply🤖 The partial function is a really useful tool from Python’s functools module. Let me break it down for you:</p>
+<p>What it does: partial takes a function and “freezes” some of its arguments, creating a new function with those arguments pre-filled.</p>
+<p>How it works: When you call partial(func, arg1, arg2), it returns a new function that, when called, will automatically pass arg1 and arg2 to func, along with any additional arguments you provide later.</p>
+<p>Simple example:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> greet(greeting, name):</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="ss">f"</span><span class="sc">{</span>greeting<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">!"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>If you use partial(greet, “Hello”), you get a new function that already has “Hello” as the greeting, so you only need to provide the name later.</p>
+<p>In your code, partial(HTMX, app=app, host=None, port=None) creates a new function where app, host, and port are already set. So when you call preview(…) later, those parameters are automatically included.</p>
+<p>Does this make sense so far? Would you like me to show you a quick example of how partial works in practice?</p>
+</div>
+</div>
+</div>
+<div id="a092ced1" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> testing(): <span class="cf">return</span> Div(P(<span class="st">'hi'</span>), style<span class="op">=</span><span class="st">'color:red'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>JupyUvi</code> is a function that can start the “Uvicorn” server in such a way that the response can be shown in both SolveIt and Jupyter Notebooks.</p>
+<p>We don’t want to start this server when running the tests with <code>nbdev_test</code>, because firstly we only need it to inspect the visuals ourselves and secondly the server needs to be stopped, else the <code>nbdev_prepare</code> command will hang. We can stop the server with <code>srv.stop()</code> at the end of the notebook. But if we then do need the server, we have to manually comment that line out. Using the directive <code>#| eval: false</code> makes sure this cell won’t be run at <code>nbdev_test</code> time.</p>
+<div id="f23694b0" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>srv <span class="op">=</span> JupyUvi(app<span class="op">=</span>app)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="2226ff70" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>p(testing)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<iframe src="./testing" style="width: 100%; height: auto; border: none;" onload="{
+        let frame = this;
+        window.addEventListener('message', function(e) {
+            if (e.source !== frame.contentWindow) return; // Only proceed if the message is from this iframe
+            if (e.data.height) frame.style.height = (e.data.height+1) + 'px';
+        }, false);
+    }" allow="accelerometer; autoplay; camera; clipboard-read; clipboard-write; display-capture; encrypted-media; fullscreen; gamepad; geolocation; gyroscope; hid; identity-credentials-get; idle-detection; magnetometer; microphone; midi; payment; picture-in-picture; publickey-credentials-get; screen-wake-lock; serial; usb; web-share; xr-spatial-tracking"></iframe> 
+</div>
+</div>
+</section>
+<section id="create-upload" class="level2">
+<h2 class="anchored" data-anchor-id="create-upload">Create upload</h2>
+<p>See <a href="https://fastht.ml/docs/tutorials/quickstart_for_web_devs.html#single-file-uploads">FastHTML docs - quickstart</a></p>
+<section id="expanation-of-fasthtml-fasttag-titled" class="level3">
+<h3 class="anchored" data-anchor-id="expanation-of-fasthtml-fasttag-titled">Expanation of FastHTML fasttag <code>Titled()</code></h3>
+<p><code>Titled()</code> is a <strong>convenience function</strong> that creates multiple HTML elements at once (a <code>&lt;title&gt;</code> tag for the browser tab and an <code>&lt;h1&gt;</code> heading for the page). Since it’s generating these elements internally, it doesn’t expose styling parameters like <code>cls</code>.</p>
+<p>In contrast, components like <code>P()</code> and <code>H1()</code> are <strong>direct HTML element creators</strong> - they map one-to-one to HTML tags. This gives you full control over their attributes, including <code>cls</code> for styling.</p>
+<p><strong>The trade-off:</strong> <code>Titled()</code> saves you time but limits customization, while using <code>Title()</code> + <code>H1()</code> separately gives you full control but requires more code.</p>
+</section>
+<section id="the-difference-between-titled-and-title-ft-components-from-fasthtml-are" class="level3">
+<h3 class="anchored" data-anchor-id="the-difference-between-titled-and-title-ft-components-from-fasthtml-are">The difference between <code>Titled()</code> and <code>Title()</code> ft-components from <code>FastHTML</code> are:</h3>
+<p><strong><code>Titled(title, *content)</code>:</strong> - Sets the browser tab title - Creates a visible h1 heading on the page - Returns both together</p>
+<p><strong><code>Title(title)</code>:</strong> - Only sets the browser tab title - Creates NO visible content on the page - Must be combined with other elements to show anything</p>
+<p><strong>The solution:</strong> When you want a browser tab title but custom heading styling, return both:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> Title(<span class="st">"..."</span>), YourVisibleContent(...)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="create-download" class="level2">
+<h2 class="anchored" data-anchor-id="create-download">Create download</h2>
+<p>I asked the SolveIt Discord Buddy how to download files with FastHTML. This was Buddy’s response.</p>
+<p>For file downloads in FastHTML, create routes that return FileResponse with the generated files. Here’s the pattern:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fasthtml.common <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> starlette.responses <span class="im">import</span> FileResponse</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> FastHTML()</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span>(<span class="st">"/download/</span><span class="sc">{filename}</span><span class="st">"</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get(filename:<span class="bu">str</span>):</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    filepath <span class="op">=</span> <span class="ss">f"/app/data/</span><span class="sc">{</span>filename<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> FileResponse(filepath, filename<span class="op">=</span>filename)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co"># In your upload handler, after processing:</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span>(<span class="st">"/process"</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="cf">async</span> <span class="kw">def</span> post(<span class="bu">file</span>: UploadFile):</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Your magic happens here, creates 6 files</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Return links to download them</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    links <span class="op">=</span> [A(<span class="ss">f"Download </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span>, href<span class="op">=</span><span class="ss">f"/download/file</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">.txt"</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">6</span>)]</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Div(<span class="op">*</span>links)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For multiple files at once, you can create a zip file and serve that, or use HTMX to trigger multiple downloads. The key is using FileResponse from Starlette (included with FastHTML) which handles the browser download prompt automatically.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<hr>
+<p>🤔 <em>Lets write a page with a download button. When I hit that button it downloads a file from the /app/data folder. Use the information from the above note to know how to do this.</em></p>
+<p>🤖Reply🤖 Here’s a page with a download button:</p>
+<p>We don’t need to import startlette to get the FileResponse module, because that’s already imported with FastHTML</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> download_file(filename:<span class="bu">str</span>):</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    upload_dir <span class="op">=</span> Path(<span class="st">"/app/data/"</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    filepath <span class="op">=</span> upload_dir <span class="op">/</span> filename</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> FileResponse(filepath, filename<span class="op">=</span>filename)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> download():</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Titled(<span class="st">"File Download Demo"</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>        Article(</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>            H3(<span class="st">"Download a file"</span>),</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>            A(<span class="st">"Download File"</span>, href<span class="op">=</span><span class="st">"/download/test.txt"</span>, cls<span class="op">=</span><span class="st">'btn'</span>)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>You<span class="st">'ll need to have a file called test.txt in your /app/data folder to test this. Want me to help you create a test file, or would you like to modify this to download a specific file you already have?</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<p>A simple test for a download button using a file from the Python project directory, <strong>without</strong> variable injection (e.g.&nbsp;without flexible filename for download)</p>
+<div id="83378a0c" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>dwnl_test <span class="op">=</span> Path(<span class="st">"../test/download_test.md"</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>dwnl_test.exists()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>True</code></pre>
+</div>
+</div>
+<div id="31f7c30c" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_file():</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    filepath <span class="op">=</span> dwnl_test</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> FileResponse(filepath, filename<span class="op">=</span>filepath.name)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> download():</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Titled(<span class="st">"File Download Demo"</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        Article(</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>            H3(<span class="st">"Download a file"</span>),</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>            A(<span class="st">"Download File"</span>, href<span class="op">=</span><span class="st">"/get_file"</span>, cls<span class="op">=</span><span class="st">'btn'</span>)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="1452c3dc" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>p(<span class="st">"download"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<iframe src="download" style="width: 100%; height: auto; border: none;" onload="{
+        let frame = this;
+        window.addEventListener('message', function(e) {
+            if (e.source !== frame.contentWindow) return; // Only proceed if the message is from this iframe
+            if (e.data.height) frame.style.height = (e.data.height+1) + 'px';
+        }, false);
+    }" allow="accelerometer; autoplay; camera; clipboard-read; clipboard-write; display-capture; encrypted-media; fullscreen; gamepad; geolocation; gyroscope; hid; identity-credentials-get; idle-detection; magnetometer; microphone; midi; payment; picture-in-picture; publickey-credentials-get; screen-wake-lock; serial; usb; web-share; xr-spatial-tracking"></iframe> 
+</div>
+</div>
+</section>
+<section id="fasthtml-best-practices" class="level1 page-columns page-full">
+<h1>FastHTML Best Practices</h1>
+<p>FastHTML applications are different to applications using FastAPI/react, Django, etc. Don’t assume that FastHTML best practices are the same as those for other frameworks. Best practices embody the fast.ai philosophy: remove ceremony, leverage smart defaults, and write code that’s both concise and clear. The following are some particular opportunities that both humans and language models sometimes miss:</p>
+<section id="database-table-creation" class="level2">
+<h2 class="anchored" data-anchor-id="database-table-creation">Database Table Creation</h2>
+<p><strong>Before:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>todos <span class="op">=</span> db.t.todos</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> todos.exists():</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>todos.create(<span class="bu">id</span><span class="op">=</span><span class="bu">int</span>, task<span class="op">=</span><span class="bu">str</span>, completed<span class="op">=</span><span class="bu">bool</span>, created<span class="op">=</span><span class="bu">str</span>, pk<span class="op">=</span><span class="st">'id'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>After:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Todo: <span class="bu">id</span>:<span class="bu">int</span><span class="op">;</span> task:<span class="bu">str</span><span class="op">;</span> completed:<span class="bu">bool</span><span class="op">;</span> created:<span class="bu">str</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>todos <span class="op">=</span> db.create(Todo)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>FastLite’s <code>create()</code> is idempotent - it creates the table if needed and returns the table object either way. Using a dataclass-style definition is cleaner and more Pythonic. The <code>id</code> field is automatically the primary key.</p>
+</section>
+<section id="route-naming-conventions" class="level2">
+<h2 class="anchored" data-anchor-id="route-naming-conventions">Route Naming Conventions</h2>
+<p><strong>Before:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span>(<span class="st">"/"</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get(): <span class="cf">return</span> Titled(<span class="st">"Todo List"</span>, ...)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span>(<span class="st">"/add"</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> post(task: <span class="bu">str</span>): ...</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>After:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> index(): <span class="cf">return</span> Titled(<span class="st">"Todo List"</span>, ...) <span class="co"># Special name for "/"</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add(task: <span class="bu">str</span>): ... <span class="co"># Function name becomes route</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Use <code>@rt</code> without arguments and let the function name define the route. The special name <code>index</code> maps to <code>/</code>.</p>
+</section>
+<section id="query-parameters-over-path-parameters" class="level2">
+<h2 class="anchored" data-anchor-id="query-parameters-over-path-parameters">Query Parameters over Path Parameters</h2>
+<p><strong>Before:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span>(<span class="st">"/toggle/</span><span class="sc">{todo_id}</span><span class="st">"</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> post(todo_id: <span class="bu">int</span>): ...</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co"># URL: /toggle/123</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>After:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> toggle(<span class="bu">id</span>: <span class="bu">int</span>): ...</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co"># URL: /toggle?id=123</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Query parameters are more idiomatic in FastHTML and avoid duplicating param names in the path.</p>
+</section>
+<section id="leverage-return-values" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="leverage-return-values">Leverage Return Values</h2>
+<div class="column-body-outset">
+<p><strong>Before:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add(task: <span class="bu">str</span>):</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  new_todo <span class="op">=</span> todos.insert(task<span class="op">=</span>task, completed<span class="op">=</span><span class="va">False</span>, created<span class="op">=</span>datetime.now().isoformat())</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> todo_item(todos[new_todo])</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> toggle(<span class="bu">id</span>: <span class="bu">int</span>):</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  todo <span class="op">=</span> todos[<span class="bu">id</span>]</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  todos.update(completed<span class="op">=</span><span class="kw">not</span> todo.completed, <span class="bu">id</span><span class="op">=</span><span class="bu">id</span>)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> todo_item(todos[<span class="bu">id</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>After:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add(task: <span class="bu">str</span>):</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> todo_item(todos.insert(task<span class="op">=</span>task, completed<span class="op">=</span><span class="va">False</span>, created<span class="op">=</span>datetime.now().isoformat()))</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> toggle(<span class="bu">id</span>: <span class="bu">int</span>):</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> todo_item(todos.update(completed<span class="op">=</span><span class="kw">not</span> todos[<span class="bu">id</span>].completed, <span class="bu">id</span><span class="op">=</span><span class="bu">id</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Both <code>insert()</code> and <code>update()</code> return the affected object, enabling functional chaining.</p>
+</div>
+</section>
+<section id="use-.to-for-url-generation" class="level2">
+<h2 class="anchored" data-anchor-id="use-.to-for-url-generation">Use <code>.to()</code> for URL Generation</h2>
+<p><strong>Before:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>hx_post<span class="op">=</span><span class="ss">f"/toggle?id=</span><span class="sc">{</span>todo<span class="sc">.</span><span class="bu">id</span><span class="sc">}</span><span class="ss">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>After:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>hx_post<span class="op">=</span>toggle.to(<span class="bu">id</span><span class="op">=</span>todo.<span class="bu">id</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The <code>.to()</code> method generates URLs with type safety and is refactoring-friendly.</p>
+</section>
+<section id="picocss-comes-free" class="level2">
+<h2 class="anchored" data-anchor-id="picocss-comes-free">PicoCSS comes free</h2>
+<p><strong>Before:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>style <span class="op">=</span> Style(<span class="st">"""</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="st">.todo-container { max-width: 600px; margin: 0 auto; padding: 20px; }</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="st">/* ... many more lines ... */</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>After:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Just use semantic HTML - Pico styles it automatically</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>Container(...), Article(...), Card(...), Group(...)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>fast_app()</code> includes PicoCSS by default. Use semantic HTML elements that Pico styles automatically. Use MonsterUI (like shadcn, but for FastHTML) for more complex UI needs.</p>
+</section>
+<section id="smart-defaults" class="level2">
+<h2 class="anchored" data-anchor-id="smart-defaults">Smart Defaults</h2>
+<p><strong>Before:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> Titled(<span class="st">"Todo List"</span>, Container(...))</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">"__main__"</span>:</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  serve()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>After:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> Titled(<span class="st">"Todo List"</span>, ...)  <span class="co"># Container is automatic</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>serve()  <span class="co"># No need for if __name__ guard</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>Titled</code> already wraps content in a <code>Container</code>, and <code>serve()</code> handles the main check internally.</p>
+</section>
+<section id="fasthtml-handles-iterables" class="level2">
+<h2 class="anchored" data-anchor-id="fasthtml-handles-iterables">FastHTML Handles Iterables</h2>
+<p><strong>Before:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>Section(<span class="op">*</span>[todo_item(todo) <span class="cf">for</span> todo <span class="kw">in</span> all_todos], <span class="bu">id</span><span class="op">=</span><span class="st">"todo-list"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>After:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>Section(<span class="bu">map</span>(todo_item, all_todos), <span class="bu">id</span><span class="op">=</span><span class="st">"todo-list"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>FastHTML components accept iterables directly - no need to unpack with <code>*</code>.</p>
+</section>
+<section id="functional-patterns" class="level2">
+<h2 class="anchored" data-anchor-id="functional-patterns">Functional Patterns</h2>
+<p>List comprehensions are great, but <code>map()</code> is often cleaner for simple transformations, especially when combined with FastHTML’s iterable handling.</p>
+</section>
+<section id="minimal-code" class="level2">
+<h2 class="anchored" data-anchor-id="minimal-code">Minimal Code</h2>
+<p><strong>Before:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> delete(<span class="bu">id</span>: <span class="bu">int</span>):</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Delete from database</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  todos.delete(<span class="bu">id</span>)</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Return empty response</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="st">""</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>After:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> delete(<span class="bu">id</span>: <span class="bu">int</span>): todos.delete(<span class="bu">id</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li>Skip comments when code is self-documenting</li>
+<li>Don’t return empty strings - <code>None</code> is returned by default</li>
+<li>Use a single line for a single idea.</li>
+</ul>
+</section>
+<section id="use-post-for-all-mutations" class="level2">
+<h2 class="anchored" data-anchor-id="use-post-for-all-mutations">Use POST for All Mutations</h2>
+<p><strong>Before:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>hx_delete<span class="op">=</span><span class="ss">f"/delete?id=</span><span class="sc">{</span>todo<span class="sc">.</span><span class="bu">id</span><span class="sc">}</span><span class="ss">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>After:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>hx_post<span class="op">=</span>delete.to(<span class="bu">id</span><span class="op">=</span>todo.<span class="bu">id</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>FastHTML routes handle only GET and POST by default. Using only these two verbs is more idiomatic and simpler.</p>
+</section>
+<section id="modern-htmx-event-syntax" class="level2">
+<h2 class="anchored" data-anchor-id="modern-htmx-event-syntax">Modern HTMX Event Syntax</h2>
+<p><strong>Before:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>hx_on<span class="op">=</span><span class="st">"htmx:afterRequest: this.reset()"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>After:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>hx_on__after_request<span class="op">=</span><span class="st">"this.reset()"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This works because:</p>
+<ul>
+<li><code>hx-on="event: code"</code> is deprecated; <code>hx-on-event="code"</code> is preferred</li>
+<li>FastHTML converts <code>_</code> to <code>-</code> (so <code>hx_on__after_request</code> becomes <code>hx-on--after-request</code>)</li>
+<li><code>::</code> in HTMX can be used as a shortcut for <code>:htmx:</code>.</li>
+<li>HTMX natively accepts <code>-</code> instead of <code>:</code> (so <code>-htmx-</code> works like <code>:htmx:</code>)</li>
+<li>HTMX accepts e.g <code>after-request</code> as an alternative to camelCase <code>afterRequest</code> Highlight connections 3 connections found Actions</li>
+</ul>
+<p>What is the most FastHTML way to create the download routes? I now have this. But that doesn’t seem to work.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_file(fn: <span class="bu">str</span>):</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># filepath = "/app/data/solveit_settings.json" # filename</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    pn <span class="op">=</span> Path(<span class="st">"/home/jelle/code_data/"</span>)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    filepath <span class="op">=</span> pn<span class="op">/</span>fn</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> FileResponse(filepath, filename<span class="op">=</span>fn)</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span>(<span class="st">"/download_page"</span>)</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get():</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>    fn <span class="op">=</span> <span class="st">"dwnltest.dbf"</span></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Titled(<span class="st">"File Download Demo"</span>,</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>        Article(</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>            H3(<span class="st">"Download a file"</span>),</span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>            A(<span class="st">"Download File"</span>, href<span class="op">=</span><span class="ss">f"/get_file/</span><span class="sc">{</span>fn<span class="sc">}</span><span class="ss">"</span>, cls<span class="op">=</span><span class="st">'btn'</span>)</span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="reply" class="level5">
+<h5 class="anchored" data-anchor-id="reply">🤖Reply🤖<!-- SOLVEIT_SEPARATOR_7f3a9b2c --></h5>
+<p>Looking at your code and the FastHTML best practices, there are a couple of issues:</p>
+<ol type="1">
+<li>You’re using a path parameter (<code>/get_file/{fn}</code>) but FastHTML prefers query parameters</li>
+<li>The <code>A</code> tag’s <code>href</code> should use <code>.to()</code> for URL generation</li>
+</ol>
+<p>Here’s the FastHTML way:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_file(fn: <span class="bu">str</span>):</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    pn <span class="op">=</span> Path(<span class="st">"/home/jelle/code_data/"</span>)</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    filepath <span class="op">=</span> pn<span class="op">/</span>fn</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> FileResponse(filepath, filename<span class="op">=</span>fn)</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> download_page():</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>    fn <span class="op">=</span> <span class="st">"dwnltest.dbf"</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Titled(<span class="st">"File Download Demo"</span>,</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>        Article(</span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>            H3(<span class="st">"Download a file"</span>),</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>            A(<span class="st">"Download File"</span>, href<span class="op">=</span>get_file.to(fn<span class="op">=</span>fn), cls<span class="op">=</span><span class="st">'btn'</span>)</span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The key changes: - Use <code>@rt</code> without the path - let the function name define the route - Use <code>get_file.to(fn=fn)</code> instead of manually constructing the URL - This creates <code>/get_file?fn=dwnltest.dbf</code> as a query parameter</p>
+<p>Does this work for you?</p>
+<p>A simple test for a download button using a file from the Python project directory, <strong>with</strong> variable injection (e.g.&nbsp;with flexible filename for download)</p>
+<div id="8c53e255" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_file(fn: <span class="bu">str</span>):</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    upload_dir <span class="op">=</span> Path(<span class="st">"../test"</span>)</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    filepath <span class="op">=</span> upload_dir<span class="op">/</span>fn</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> FileResponse(filepath, filename<span class="op">=</span>fn)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="94c06f4b" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> download_page():</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    fn <span class="op">=</span> <span class="st">"download_test.md"</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Titled(<span class="st">"File Download Demo"</span>,</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>        Article(</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>            H3(<span class="st">"Download a file"</span>),</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>            A(<span class="st">"Download File"</span>, href<span class="op">=</span>get_file.to(fn<span class="op">=</span>fn), cls<span class="op">=</span><span class="st">'btn'</span>)</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="c1bf0bbc" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>p(download_page)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<iframe src="./download_page" style="width: 100%; height: auto; border: none;" onload="{
+        let frame = this;
+        window.addEventListener('message', function(e) {
+            if (e.source !== frame.contentWindow) return; // Only proceed if the message is from this iframe
+            if (e.data.height) frame.style.height = (e.data.height+1) + 'px';
+        }, false);
+    }" allow="accelerometer; autoplay; camera; clipboard-read; clipboard-write; display-capture; encrypted-media; fullscreen; gamepad; geolocation; gyroscope; hid; identity-credentials-get; idle-detection; magnetometer; microphone; midi; payment; picture-in-picture; publickey-credentials-get; screen-wake-lock; serial; usb; web-share; xr-spatial-tracking"></iframe> 
+</div>
+</div>
+</section>
+</section>
+<section id="web-application-upload-convert-and-download" class="level2">
+<h2 class="anchored" data-anchor-id="web-application-upload-convert-and-download">Web application upload, convert and download</h2>
+<section id="sonarhome-documentation" class="level3">
+<h3 class="anchored" data-anchor-id="sonarhome-documentation"><code>sonarhome()</code> Documentation</h3>
+<p><strong>Purpose:</strong> Creates the main landing page for the Sonar File Converter web application, allowing users to upload <code>.sl2</code>/<code>.sl3</code> sonar files and receive converted shapefiles, CSV, and geopackage files as a downloadable zip.</p>
+<p><strong>How it works:</strong></p>
+<ol type="1">
+<li><p><strong>Layout &amp; Branding:</strong> Uses a full-height background image (WDODelta imagery) with a centered title and form, styled with Tailwind CSS utility classes.</p></li>
+<li><p><strong>File Upload Form:</strong> Contains a file input and submit button that:</p>
+<ul>
+<li>Posts to the <code>upload</code> route via HTMX (<code>hx_post=upload</code>)</li>
+<li>Displays results in <code>#result</code> div (<code>hx_target="#result"</code>)</li>
+<li>Shows a loading spinner during processing (<code>hx_indicator="#spinner"</code>)</li>
+<li>Disables the button while uploading (<code>hx_disabled_elt="button"</code>)</li>
+</ul></li>
+<li><p><strong>Uses <code>Title()</code> instead of <code>Titled()</code>:</strong> This gives full control over styling the visible heading with custom Tailwind classes (<code>text-4xl font-bold</code>), which <code>Titled()</code> wouldn’t allow since it auto-generates an <code>&lt;h1&gt;</code>.</p></li>
+</ol>
+<p><strong>Why this approach?</strong></p>
+<ul>
+<li><strong>HTMX over full page reload:</strong> Keeps the user on the same page; only the result area updates—better UX for a file conversion workflow.</li>
+<li><strong>DaisyUI + Tailwind:</strong> Provides the spinner, button styles, and file input styling with minimal custom CSS, matching the WDODelta theme defined earlier.</li>
+<li><strong>Separation of concerns:</strong> The upload logic lives in a separate <code>upload()</code> route, keeping <code>sonarhome()</code> focused purely on presentation.</li>
+</ul>
+<p><strong><code>index()</code> route:</strong> Redirects <code>/</code> to <code>/sonarhome</code> so the app works both in production (where users expect <code>/</code> to work) and in SolveIt (where you can preview <code>/sonarhome</code>).</p>
+<hr>
+</section>
+<section id="sonarhome" class="level3">
+<h3 class="anchored" data-anchor-id="sonarhome">sonarhome</h3>
+<blockquote class="blockquote">
+<pre><code> sonarhome ()</code></pre>
+</blockquote>
+</section>
+<section id="upload-documentation" class="level3">
+<h3 class="anchored" data-anchor-id="upload-documentation"><code>upload()</code> Documentation</h3>
+<p><strong>Purpose:</strong> Handles sonar file uploads, converts them to GIS formats (shapefile, CSV, geopackage) using <code>process_sonar_file()</code>, packages all outputs into a zip, and provides a download link while cleaning up temporary files.</p>
+<p><strong>How it works:</strong></p>
+<ol type="1">
+<li><strong>Receives file:</strong> Reads the uploaded file buffer and saves it to <code>/app/data</code></li>
+<li><strong>Converts:</strong> Calls <code>process_sonar_file()</code> to generate <code>.shp</code>, <code>.shx</code>, <code>.dbf</code>, <code>.prj</code>, <code>.cpg</code>, <code>.csv</code>, and <code>.gpkg</code> files</li>
+<li><strong>Packages:</strong> Creates a zip file containing all generated outputs, deleting originals as they’re added</li>
+<li><strong>Cleanup:</strong> Removes the uploaded sonar file immediately</li>
+<li><strong>Returns:</strong> A <code>Div</code> with a success message and download link that triggers final zip cleanup after download</li>
+</ol>
+<p><strong>Why this approach?</strong></p>
+<ul>
+<li><strong>Async function:</strong> Handles <code>await file.read()</code> properly for non-blocking file uploads</li>
+<li><strong>Zip creation inline:</strong> Uses Python’s <code>zipfile</code> to bundle multiple outputs—simpler than serving 6+ separate files</li>
+<li><strong>Immediate cleanup:</strong> Deletes source files as they’re zipped to minimize disk usage</li>
+<li><strong>HTMX cleanup trigger:</strong> <code>hx_on__after_request</code> fires a POST to <code>/cleanup</code> after download completes, automatically removing the zip without requiring a separate user action</li>
+<li><strong>Query parameters:</strong> Uses <code>get_file.to(fn=...)</code> following FastHTML best practices for URL generation</li>
+</ul>
+<hr>
+</section>
+<section id="upload" class="level3">
+<h3 class="anchored" data-anchor-id="upload">upload</h3>
+<blockquote class="blockquote">
+<pre><code> upload (file:starlette.datastructures.UploadFile)</code></pre>
+</blockquote>
+</section>
+<section id="get_file-documentation" class="level3">
+<h3 class="anchored" data-anchor-id="get_file-documentation"><code>get_file()</code> Documentation</h3>
+<p><strong>Purpose:</strong> Serves files from <code>/app/data</code> for download to the user’s browser.</p>
+<p><strong>How it works:</strong></p>
+<ol type="1">
+<li><strong>Receives filename:</strong> Takes <code>fn</code> as a query parameter (e.g., <code>/get_file?fn=results.zip</code>)</li>
+<li><strong>Constructs path:</strong> Combines <code>/app/data</code> with the filename</li>
+<li><strong>Returns FileResponse:</strong> Starlette’s <code>FileResponse</code> handles the download, setting appropriate headers so the browser prompts to save the file</li>
+</ol>
+<p><strong>Why this approach?</strong></p>
+<ul>
+<li><strong>Query parameters over path parameters:</strong> Following FastHTML best practices—simpler and more idiomatic than <code>/get_file/{fn}</code></li>
+<li><strong>FileResponse handles complexity:</strong> Automatically manages content-type headers, streaming large files, and browser download prompts</li>
+<li><strong>Minimal code:</strong> Single-purpose function that does one thing clearly</li>
+<li><strong>Works with <code>.to()</code> method:</strong> Enables type-safe URL generation like <code>get_file.to(fn=zip_path.name)</code> in other routes</li>
+</ul>
+<hr>
+</section>
+<section id="get_file" class="level3">
+<h3 class="anchored" data-anchor-id="get_file">get_file</h3>
+<blockquote class="blockquote">
+<pre><code> get_file (fn:str)</code></pre>
+</blockquote>
+</section>
+<section id="cleanup-documentation" class="level3">
+<h3 class="anchored" data-anchor-id="cleanup-documentation"><code>cleanup()</code> Documentation</h3>
+<p><strong>Purpose:</strong> Deletes temporary zip files from <code>/app/data</code> after the user has downloaded them.</p>
+<p><strong>How it works:</strong></p>
+<ol type="1">
+<li><strong>Receives filename:</strong> Takes <code>fn</code> as a query parameter (e.g., <code>/cleanup?fn=results.zip</code>)</li>
+<li><strong>Constructs path:</strong> Combines <code>/app/data</code> with the filename</li>
+<li><strong>Safe deletion:</strong> Checks if file exists before attempting to delete it with <code>unlink()</code></li>
+</ol>
+<p><strong>Why this approach?</strong></p>
+<ul>
+<li><strong>Triggered automatically:</strong> Called via HTMX’s <code>hx_on__after_request</code> event in the <code>upload()</code> function—runs after the download completes without user interaction</li>
+<li><strong>Query parameters:</strong> Follows FastHTML best practices for passing data</li>
+<li><strong>Minimal code:</strong> Single responsibility—just delete the file</li>
+<li><strong>No return value needed:</strong> FastHTML returns <code>None</code> by default, which is appropriate for cleanup operations</li>
+<li><strong>Existence check:</strong> Prevents errors if the file was already deleted or never created</li>
+</ul>
+<p>This completes the workflow: upload → convert → download → automatic cleanup.</p>
+<hr>
+</section>
+<section id="cleanup" class="level3">
+<h3 class="anchored" data-anchor-id="cleanup">cleanup</h3>
+<blockquote class="blockquote">
+<pre><code> cleanup (fn:str)</code></pre>
+</blockquote>
+<div id="aa1f30ae" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>p(sonarhome)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<iframe src="./sonarhome" style="width: 100%; height: auto; border: none;" onload="{
+        let frame = this;
+        window.addEventListener('message', function(e) {
+            if (e.source !== frame.contentWindow) return; // Only proceed if the message is from this iframe
+            if (e.data.height) frame.style.height = (e.data.height+1) + 'px';
+        }, false);
+    }" allow="accelerometer; autoplay; camera; clipboard-read; clipboard-write; display-capture; encrypted-media; fullscreen; gamepad; geolocation; gyroscope; hid; identity-credentials-get; idle-detection; magnetometer; microphone; midi; payment; picture-in-picture; publickey-credentials-get; screen-wake-lock; serial; usb; web-share; xr-spatial-tracking"></iframe> 
+</div>
+</div>
+</section>
+</section>
+<section id="adding-option-to-start-the-webserver-locally-with-serve" class="level2">
+<h2 class="anchored" data-anchor-id="adding-option-to-start-the-webserver-locally-with-serve">Adding option to start the webserver locally with <code>serve()</code></h2>
+<p>First make sure the <code>index</code> (e.g.&nbsp;“/” or root) page is redirected to the homepage of this app: “sonarhome”.</p>
+<div id="e6ff06f2" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="at">@rt</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> index(): <span class="cf">return</span> sonarhome()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Next, add a function we can start from the commandline to start the server and the client for the webapplication.</p>
+<p>Another clean way to do this is:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> os.environ[<span class="st">'IN_SOLVEIT'</span>]: serve()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>But in this case we don’t use it, because we use the <code>main</code> function to start the app from the commandline. Zie <code>index.ipynb</code>.</p>
+<hr>
+<section id="main" class="level3">
+<h3 class="anchored" data-anchor-id="main">main</h3>
+<blockquote class="blockquote">
+<pre><code> main ()</code></pre>
+</blockquote>
+<p><em>Start the web server locally for the sonar file converter</em></p>
+<p>By adding this line to <code>pyproject.toml</code> we can make this function available on the commandline.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="sourceCode ./pyproject.toml code-with-copy"><code class="sourceCode toml"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="dt">...</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="kw">[project.scripts]</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="dt">sonar2csv_webgui</span> <span class="op">=</span> <span class="st">"sonar2csv_shape:webgui_main"</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="dt">...</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>And expose this function by adding tot the <code>__init__.py</code> file in the folder <code>./sonar2csv_shape</code> (e.g.&nbsp;the folder with the project python files).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="sourceCode ./sonar2csv_shape/__init__.py code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> .webgui <span class="im">import</span> main <span class="im">as</span> webgui_main</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a><span class="va">__all__</span> <span class="op">=</span> [<span class="st">'wegbui_main'</span>, ...]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Then we can run from the root of this project.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> sync</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run sonar2csv_webgui</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/Hopsakee\.github\.io\/sonar2csv_shape");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Hopsakee/sonar2csv_shape/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
