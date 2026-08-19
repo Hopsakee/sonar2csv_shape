@@ -12,7 +12,15 @@ license = {text = "GNU3"}
 authors = [{name = "Hopsakee", email = "hopsakee@posteo.nl"}]
 keywords = ['nbdev', 'jupyter', 'notebook', 'python']
 classifiers = ["Natural Language :: English", "Intended Audience :: Developers", "Development Status :: 3 - Alpha", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3 :: Only"]
-dependencies = []
+dependencies = [
+    "fastcore>=2.2.13",
+    "fastlite>=0.2.4",
+    "geopandas>=1.1.4",
+    "httpx>=0.28.1",
+    "nbdev>=3.3.12",
+    "python-fasthtml>=0.14.12",
+    "sonarlight>=0.1.7",
+]
 
 [project.urls]
 Repository = "https://github.com/Hopsakee/sonar2csv_shape"
@@ -28,3 +36,8 @@ version = {attr = "sonar2csv_shape.__version__"}
 include = ["sonar2csv_shape"]
 
 [tool.nbdev]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.3.0",
+]

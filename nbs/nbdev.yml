@@ -7,3 +7,8 @@ website:
   description: "Convert sl2 and sl3 files from sonar measurements to csv and shape"
   repo-branch: main
   repo-url: "https://github.com/Hopsakee/sonar2csv_shape"
+
+format-links:
+  - html
+  - format: commonmark
+    text: Markdown
