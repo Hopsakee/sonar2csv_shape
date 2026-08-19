@@ -1,33 +1,30 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name="sonar2csv_shape"
+name = "sonar2csv_shape"
 dynamic = ["version"]
 description = "Convert sl2 and sl3 files from sonar measurements to csv and shape"
 readme = "README.md"
-authors = [
-    { name = "Jelle de Jong", email = "jelledejong@wdodelta.nl" }
-]
-requires-python=">=3.11"
-dependencies = [
-    "geopandas>=1.1.1",
-    "pre-commit>=4.4.0",
-    "python-fasthtml>=0.12.33",
-    "sonarlight>=0.1.7",
-]
+requires-python = ">=3.11"
+license = {text = "GNU3"}
+authors = [{name = "Hopsakee", email = "hopsakee@posteo.nl"}]
+keywords = ['nbdev', 'jupyter', 'notebook', 'python']
+classifiers = ["Natural Language :: English", "Intended Audience :: Developers", "Development Status :: 3 - Alpha", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3 :: Only"]
+dependencies = []
 
-[project.scripts]
-sonar2csv_shape = "sonar2csv_shape:main"
-sonar2csv_webgui = "sonar2csv_shape:webgui_main"
+[project.urls]
+Repository = "https://github.com/Hopsakee/sonar2csv_shape"
+Documentation = "https://Hopsakee.github.io/sonar2csv_shape"
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+[project.entry-points.nbdev]
+sonar2csv_shape = "sonar2csv_shape._modidx:d"
 
-[tool.hatch.version]
-source = "code"
-path = "__VERSION__.py"
+[tool.setuptools.dynamic]
+version = {attr = "sonar2csv_shape.__version__"}
 
-[dependency-groups]
-dev = [
-    "ipykernel>=7.1.0",
-    "nbdev>=2.4.6",
-]
+[tool.setuptools.packages.find]
+include = ["sonar2csv_shape"]
+
+[tool.nbdev]
