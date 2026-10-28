@@ -67,7 +67,9 @@ daisy_hdrs = (
 )
 
 # %% ../nbs/02_webgui.ipynb #b825a847
-app = FastHTML(hdrs=daisy_hdrs, htmlkw={'data-theme': 'WDODelta'})
+if not environ.get("SESSION_SECRET_KEY"):
+    raise RuntimeError("SESSION_SECRET_KEY environment variable must be set (used to sign session cookies)")
+app = FastHTML(hdrs=daisy_hdrs, htmlkw={'data-theme': 'WDODelta'}, secret_key=environ["SESSION_SECRET_KEY"])
 rt = app.route
 
 # %% ../nbs/02_webgui.ipynb #5051005e
